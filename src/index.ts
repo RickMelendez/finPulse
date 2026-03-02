@@ -6,20 +6,42 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
+import authRouter from './infrastructure/routes/auth';
+import { errorHandler } from './infrastructure/middleware/errorHandler';
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security & logging middleware
 app.use(helmet());
 app.use(cors());
-app.use(morgan('dev'));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json());
 
+// Health check (no auth required)
 app.get('/api/v1/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    service: 'finpulse-api',
+    timestamp: new Date().toISOString(),
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`FinPulse API running on port ${PORT}`);
+// Auth routes (no auth required)
+app.use('/api/v1/auth', authRouter);
+
+// 404 handler
+app.use((_req, res) => {
+  res.status(404).json({ success: false, error: 'Route not found' });
 });
+
+// Global error handler (must be last)
+app.use(errorHandler);
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`FinPulse API running on port ${PORT}`);
+  });
+}
 
 export default app;
