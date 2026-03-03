@@ -5,7 +5,7 @@
     "buildCommand": "npm ci && npm run build"
   },
   "deploy": {
-    "startCommand": "node dist/src/scripts/migrate.js && node dist/src/index.js 2>&1",
+    "startCommand": "echo '[1] migrations...' && node dist/src/scripts/migrate.js && echo '[2] NODE_ENV='$NODE_ENV' PORT='$PORT && echo '[3] starting server...' && node dist/src/index.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
