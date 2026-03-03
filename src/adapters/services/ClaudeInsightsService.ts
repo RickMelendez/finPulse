@@ -1,7 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 export interface TransactionSummaryData {
   totalIncome: number;
   totalExpenses: number;
@@ -36,6 +34,12 @@ export interface TrendData {
 const MODEL = 'claude-sonnet-4-6';
 
 export class ClaudeInsightsService {
+  private client: Anthropic;
+
+  constructor() {
+    this.client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+
   async generateMonthlySummary(
     periodStart: string,
     periodEnd: string,
@@ -81,7 +85,7 @@ Required JSON response schema:
 Provide 3-5 recommendations. Only include anomalies if genuinely unusual patterns exist.`,
     };
 
-    const response = await client.messages.create({
+    const response = await this.client.messages.create({
       model: MODEL,
       max_tokens: 1024,
       messages: [prompt],
@@ -119,7 +123,7 @@ Required JSON response schema:
 Focus on spending trends, growth patterns, and projections. Provide 3-4 recommendations.`,
     };
 
-    const response = await client.messages.create({
+    const response = await this.client.messages.create({
       model: MODEL,
       max_tokens: 1024,
       messages: [prompt],
@@ -140,7 +144,7 @@ Focus on spending trends, growth patterns, and projections. Provide 3-4 recommen
       netBalance: number;
     }
   ): Promise<string> {
-    const response = await client.messages.create({
+    const response = await this.client.messages.create({
       model: MODEL,
       max_tokens: 512,
       system: 'You are a helpful personal finance advisor. Answer questions about the user\'s finances concisely and accurately based on the data provided. Keep answers under 150 words.',

@@ -18,7 +18,7 @@ const mockCreate = jest.fn();
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (Anthropic as jest.Mock).mockImplementation(() => ({
+  (Anthropic as unknown as jest.Mock).mockImplementation(() => ({
     messages: { create: mockCreate },
   }));
 });
