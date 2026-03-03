@@ -41,6 +41,18 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+// GET /api/v1/insights/connection-test
+// Diagnoses Anthropic API connectivity — returns ok or the exact error string
+router.get('/connection-test', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { ClaudeInsightsService: Svc } = await import('../../adapters/services/ClaudeInsightsService');
+    const result = await new Svc().testConnection();
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/v1/insights/trends
 // Returns AI trend analysis over the last 3 months (always fresh — no cache)
 router.get('/trends', async (req: Request, res: Response, next: NextFunction) => {
