@@ -1,5 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk';
 
+function stripFences(text: string): string {
+  // Remove markdown code fences (```json ... ``` or ``` ... ```)
+  return text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+}
+
 export interface TransactionSummaryData {
   totalIncome: number;
   totalExpenses: number;
@@ -95,7 +100,7 @@ Provide 3-5 recommendations. Only include anomalies if genuinely unusual pattern
     });
 
     const text = response.content[0].type === 'text' ? response.content[0].text : '';
-    const parsed = JSON.parse(text) as Omit<InsightResult, 'modelUsed'>;
+    const parsed = JSON.parse(stripFences(text)) as Omit<InsightResult, 'modelUsed'>;
 
     return { ...parsed, modelUsed: MODEL };
   }
@@ -133,9 +138,23 @@ Focus on spending trends, growth patterns, and projections. Provide 3-4 recommen
     });
 
     const text = response.content[0].type === 'text' ? response.content[0].text : '';
-    const parsed = JSON.parse(text) as Omit<InsightResult, 'modelUsed'>;
+    const parsed = JSON.parse(stripFences(text)) as Omit<InsightResult, 'modelUsed'>;
 
     return { ...parsed, modelUsed: MODEL };
+  }
+
+  async testConnection(): Promise<{ ok: boolean; model: string; error?: string }> {
+    try {
+      const response = await this.client.messages.create({
+        model: MODEL,
+        max_tokens: 16,
+        messages: [{ role: 'user', content: 'Reply with just: ok' }],
+      });
+      const text = response.content[0]?.type === 'text' ? response.content[0].text : '';
+      return { ok: true, model: MODEL, error: text !== 'ok' ? text : undefined };
+    } catch (err) {
+      return { ok: false, model: MODEL, error: String(err) };
+    }
   }
 
   async askQuestion(
