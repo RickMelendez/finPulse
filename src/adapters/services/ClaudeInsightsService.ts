@@ -34,10 +34,13 @@ export interface TrendData {
 const MODEL = 'claude-sonnet-4-6';
 
 export class ClaudeInsightsService {
-  private client: Anthropic;
+  private _client: Anthropic | null = null;
 
-  constructor() {
-    this.client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  private get client(): Anthropic {
+    if (!this._client) {
+      this._client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    }
+    return this._client;
   }
 
   async generateMonthlySummary(
