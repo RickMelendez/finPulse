@@ -4,6 +4,12 @@ export interface SpendingRecommendation {
   priority: 'high' | 'medium' | 'low';
 }
 
+export interface SpendingAnomaly {
+  description: string;
+  amount: number;
+  severity: 'high' | 'medium' | 'low';
+}
+
 export interface SpendingInsight {
   id: string;
   userId: string;
@@ -12,7 +18,7 @@ export interface SpendingInsight {
   summary: string;
   recommendations: SpendingRecommendation[];
   topCategories: Record<string, number>;
-  anomalies: Record<string, unknown> | null;
+  anomalies: SpendingAnomaly[] | null;
   modelUsed: string;
   generatedAt: Date;
   expiresAt: Date;
