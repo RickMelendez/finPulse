@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<void> {
 
   await knex.schema.createTable('accounts', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table.uuid('user_id').notNullable().references('id').inTable('auth.users').onDelete('CASCADE');
+    table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
     table.string('name', 100).notNullable();
     table.specificType('type', 'account_type').notNullable();
     table.decimal('balance', 12, 2).defaultTo(0.00);

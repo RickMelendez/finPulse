@@ -8,7 +8,7 @@ export async function up(knex: Knex): Promise<void> {
 
   await knex.schema.createTable('categories', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table.uuid('user_id').nullable().references('id').inTable('auth.users').onDelete('CASCADE');
+    table.uuid('user_id').nullable().references('id').inTable('users').onDelete('CASCADE');
     table.string('name', 50).notNullable();
     table.string('icon', 30).nullable();
     table.string('color', 7).nullable();
