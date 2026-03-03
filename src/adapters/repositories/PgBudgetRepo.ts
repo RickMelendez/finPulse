@@ -6,10 +6,11 @@ interface DbBudget {
   id: string;
   user_id: string;
   category_id: string | null;
+  name: string;
   amount: string;
   period: 'weekly' | 'monthly' | 'yearly';
   start_date: string;
-  end_date: string;
+  end_date: string | null;
   is_active: boolean;
   created_at: Date;
 }
@@ -19,10 +20,11 @@ function toEntity(row: DbBudget): Budget {
     id: row.id,
     userId: row.user_id,
     categoryId: row.category_id,
+    name: row.name,
     amount: parseFloat(row.amount),
     period: row.period,
     startDate: new Date(row.start_date),
-    endDate: new Date(row.end_date),
+    endDate: row.end_date ? new Date(row.end_date) : null,
     isActive: row.is_active,
     createdAt: row.created_at,
   };
@@ -38,11 +40,12 @@ export interface BudgetWithProgress extends Budget {
 
 export interface CreateBudgetData {
   userId: string;
+  name?: string;
   categoryId?: string;
   amount: number;
   period: 'weekly' | 'monthly' | 'yearly';
   startDate: string;
-  endDate: string;
+  endDate?: string;
 }
 
 export class PgBudgetRepo {
@@ -64,11 +67,12 @@ export class PgBudgetRepo {
     const [row] = await db('budgets')
       .insert({
         user_id: data.userId,
+        name: data.name ?? '',
         category_id: data.categoryId ?? null,
         amount: data.amount,
         period: data.period,
         start_date: data.startDate,
-        end_date: data.endDate,
+        end_date: data.endDate ?? null,
         is_active: true,
       })
       .returning('*');
@@ -80,6 +84,7 @@ export class PgBudgetRepo {
     if (!existing) throw new NotFoundError('Budget');
 
     const updateData: Record<string, unknown> = {};
+    if (data.name !== undefined) updateData.name = data.name;
     if (data.amount !== undefined) updateData.amount = data.amount;
     if (data.period !== undefined) updateData.period = data.period;
     if (data.startDate !== undefined) updateData.start_date = data.startDate;
@@ -104,8 +109,11 @@ export class PgBudgetRepo {
     // Sum transactions within the budget period and category (if set)
     const spentQuery = db('transactions')
       .where({ user_id: row.user_id, type: 'expense' })
-      .andWhere('transaction_date', '>=', row.start_date)
-      .andWhere('transaction_date', '<=', row.end_date);
+      .andWhere('transaction_date', '>=', row.start_date);
+
+    if (row.end_date) {
+      spentQuery.andWhere('transaction_date', '<=', row.end_date);
+    }
 
     if (row.category_id) {
       spentQuery.andWhere('category_id', row.category_id);
@@ -134,7 +142,9 @@ export class PgBudgetRepo {
     const activeBudgets = await db('budgets')
       .where({ user_id: userId, is_active: true })
       .andWhere('start_date', '<=', transactionDate)
-      .andWhere('end_date', '>=', transactionDate)
+      .andWhere(function () {
+        this.whereNull('end_date').orWhere('end_date', '>=', transactionDate);
+      })
       .andWhere(function () {
         this.whereNull('category_id').orWhere('category_id', categoryId);
       });
