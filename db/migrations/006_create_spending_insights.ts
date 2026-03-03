@@ -3,7 +3,7 @@ import type { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('spending_insights', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table.uuid('user_id').notNullable().references('id').inTable('auth.users').onDelete('CASCADE');
+    table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
     table.date('period_start').notNullable();
     table.date('period_end').notNullable();
     table.text('summary').notNullable();

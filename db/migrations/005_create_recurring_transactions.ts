@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
 
   await knex.schema.createTable('recurring_transactions', (table) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table.uuid('user_id').notNullable().references('id').inTable('auth.users').onDelete('CASCADE');
+    table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
     table.uuid('account_id').notNullable().references('id').inTable('accounts').onDelete('RESTRICT');
     table.uuid('category_id').notNullable().references('id').inTable('categories').onDelete('RESTRICT');
     table.specificType('type', 'transaction_type').notNullable();
