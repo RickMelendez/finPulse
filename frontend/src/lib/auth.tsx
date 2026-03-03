@@ -48,8 +48,13 @@ function userFromToken(token: string): AuthUser | null {
 }
 
 interface AuthApiResponse {
-  user: { id: string; email: string };
-  session: { access_token: string; refresh_token: string };
+  success: boolean;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+    user: { id: string; email: string };
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -68,14 +73,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string): Promise<void> => {
     const { data } = await api.post<AuthApiResponse>('/auth/login', { email, password });
-    setTokens(data.session.access_token, data.session.refresh_token);
-    setUser({ id: data.user.id, email: data.user.email });
+    setTokens(data.data.accessToken, data.data.refreshToken);
+    setUser({ id: data.data.user.id, email: data.data.user.email });
   }, []);
 
   const register = useCallback(async (email: string, password: string): Promise<void> => {
     const { data } = await api.post<AuthApiResponse>('/auth/register', { email, password });
-    setTokens(data.session.access_token, data.session.refresh_token);
-    setUser({ id: data.user.id, email: data.user.email });
+    setTokens(data.data.accessToken, data.data.refreshToken);
+    setUser({ id: data.data.user.id, email: data.data.user.email });
   }, []);
 
   const logout = useCallback(async (): Promise<void> => {

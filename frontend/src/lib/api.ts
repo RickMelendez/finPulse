@@ -21,8 +21,10 @@ export function getRefreshToken(): string | null {
   return localStorage.getItem(REFRESH_TOKEN_KEY);
 }
 
+const BASE_URL = `${import.meta.env.VITE_API_URL ?? ''}/api/v1`;
+
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -85,14 +87,15 @@ api.interceptors.response.use(
 
     try {
       const { data } = await axios.post<{
-        session: { access_token: string; refresh_token: string };
-      }>('/api/v1/auth/refresh', { refresh_token: refreshToken });
+        success: boolean;
+        data: { accessToken: string; refreshToken: string };
+      }>(`${BASE_URL}/auth/refresh`, { refreshToken });
 
-      const { access_token, refresh_token } = data.session;
-      setTokens(access_token, refresh_token);
-      onRefreshComplete(access_token);
+      const { accessToken, refreshToken: newRefresh } = data.data;
+      setTokens(accessToken, newRefresh);
+      onRefreshComplete(accessToken);
 
-      originalRequest.headers.Authorization = `Bearer ${access_token}`;
+      originalRequest.headers.Authorization = `Bearer ${accessToken}`;
       return api(originalRequest);
     } catch {
       clearTokens();
