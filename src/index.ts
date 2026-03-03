@@ -10,6 +10,8 @@ import authRouter from './infrastructure/routes/auth';
 import transactionsRouter from './infrastructure/routes/transactions';
 import categoriesRouter from './infrastructure/routes/categories';
 import budgetsRouter from './infrastructure/routes/budgets';
+import accountsRouter from './infrastructure/routes/accounts';
+import recurringRouter from './infrastructure/routes/recurring';
 import { errorHandler } from './infrastructure/middleware/errorHandler';
 
 const app = express();
@@ -41,6 +43,12 @@ app.use('/api/v1/categories', categoriesRouter);
 
 // Budget routes (auth required)
 app.use('/api/v1/budgets', budgetsRouter);
+
+// Account routes (auth required)
+app.use('/api/v1/accounts', accountsRouter);
+
+// Recurring transaction routes (auth required)
+app.use('/api/v1/recurring', recurringRouter);
 
 // 404 handler
 app.use((_req, res) => {
