@@ -17,4 +17,4 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 USER appuser
 EXPOSE 3000
-CMD ["node", "dist/src/index.js"]
+CMD node dist/src/scripts/migrate.js && node dist/src/index.js

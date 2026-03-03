@@ -1,11 +1,9 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "npm ci && npm run build"
+    "builder": "DOCKERFILE"
   },
   "deploy": {
-    "startCommand": "echo '[1] migrations...' && node dist/src/scripts/migrate.js && echo '[2] NODE_ENV='$NODE_ENV' PORT='$PORT && echo '[3] starting server...' && node dist/src/index.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
