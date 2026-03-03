@@ -7,6 +7,18 @@ import { askFinanceQuestion } from '../../usecases/AskFinanceQuestion';
 import { ValidationError } from '../../shared/errors/ValidationError';
 
 const router = Router();
+
+// GET /api/v1/insights/connection-test  (no auth — diagnostic only)
+router.get('/connection-test', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { ClaudeInsightsService: Svc } = await import('../../adapters/services/ClaudeInsightsService');
+    const result = await new Svc().testConnection();
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.use(authMiddleware);
 
 function getCurrentMonthRange(): { start: string; end: string } {
@@ -36,18 +48,6 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
     const insight = await generateSpendingInsights(user.id, periodStart, periodEnd);
     res.json({ success: true, data: insight });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET /api/v1/insights/connection-test
-// Diagnoses Anthropic API connectivity — returns ok or the exact error string
-router.get('/connection-test', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { ClaudeInsightsService: Svc } = await import('../../adapters/services/ClaudeInsightsService');
-    const result = await new Svc().testConnection();
-    res.json({ success: true, data: result });
   } catch (err) {
     next(err);
   }
