@@ -8,6 +8,8 @@ import morgan from 'morgan';
 
 import authRouter from './infrastructure/routes/auth';
 import transactionsRouter from './infrastructure/routes/transactions';
+import categoriesRouter from './infrastructure/routes/categories';
+import budgetsRouter from './infrastructure/routes/budgets';
 import { errorHandler } from './infrastructure/middleware/errorHandler';
 
 const app = express();
@@ -33,6 +35,12 @@ app.use('/api/v1/auth', authRouter);
 
 // Transaction routes (auth required)
 app.use('/api/v1/transactions', transactionsRouter);
+
+// Category routes (auth required)
+app.use('/api/v1/categories', categoriesRouter);
+
+// Budget routes (auth required)
+app.use('/api/v1/budgets', budgetsRouter);
 
 // 404 handler
 app.use((_req, res) => {
