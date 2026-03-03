@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { SupabaseAuthService } from '../../adapters/services/SupabaseAuthService';
+import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../../shared/errors/UnauthorizedError';
-
-const authService = new SupabaseAuthService();
 
 export interface AuthenticatedRequest extends Request {
   user: {
@@ -11,11 +9,11 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
-export async function authMiddleware(
+export function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> {
+): void {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -25,10 +23,17 @@ export async function authMiddleware(
     const token = authHeader.split(' ')[1];
     if (!token) throw new UnauthorizedError('Token not provided');
 
-    const user = await authService.verifyToken(token);
-    (req as AuthenticatedRequest).user = user;
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new UnauthorizedError('Server misconfigured');
+
+    const payload = jwt.verify(token, secret) as jwt.JwtPayload;
+    (req as AuthenticatedRequest).user = { id: payload.sub as string, email: payload.email as string };
     next();
   } catch (err) {
-    next(err);
+    if (err instanceof UnauthorizedError) {
+      next(err);
+    } else {
+      next(new UnauthorizedError('Invalid or expired token'));
+    }
   }
 }

@@ -1,10 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { SupabaseAuthService } from '../../adapters/services/SupabaseAuthService';
+import { JwtAuthService } from '../../adapters/services/JwtAuthService';
 import { registerSchema, loginSchema, refreshSchema } from '../../shared/validators/auth.validators';
 import { ValidationError } from '../../shared/errors/ValidationError';
 
 const router = Router();
-const authService = new SupabaseAuthService();
+const authService = new JwtAuthService();
 
 // POST /api/v1/auth/register
 router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
