@@ -21,7 +21,7 @@ jest.mock('../../src/infrastructure/config/database', () => {
   db.fn = { now: jest.fn(() => 'NOW()') };
   db.raw = jest.fn((sql: string) => sql);
 
-  (db as jest.Mock & { _mockQuery: typeof mockQuery })._mockQuery = mockQuery;
+  (db as unknown as jest.Mock & { _mockQuery: typeof mockQuery })._mockQuery = mockQuery;
   return { __esModule: true, default: db };
 });
 

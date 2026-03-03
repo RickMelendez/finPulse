@@ -1,4 +1,4 @@
-import { Router, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { authMiddleware, AuthenticatedRequest } from '../middleware/authMiddleware';
 import {
   createTransactionSchema,
@@ -19,10 +19,11 @@ const router = Router();
 router.use(authMiddleware);
 
 // GET /api/v1/transactions/summary  — must be before /:id
-router.get('/summary', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+router.get('/summary', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { user } = req as AuthenticatedRequest;
     const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
-    const summary = await getTransactionSummary(req.user.id, startDate, endDate);
+    const summary = await getTransactionSummary(user.id, startDate, endDate);
     res.json({ success: true, data: summary });
   } catch (err) {
     next(err);
@@ -30,8 +31,9 @@ router.get('/summary', async (req: AuthenticatedRequest, res: Response, next: Ne
 });
 
 // GET /api/v1/transactions
-router.get('/', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { user } = req as AuthenticatedRequest;
     const result = listTransactionsQuerySchema.safeParse(req.query);
     if (!result.success) {
       const errors: Record<string, string[]> = {};
@@ -41,7 +43,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response, next: NextFunct
       });
       throw new ValidationError('Invalid query parameters', errors);
     }
-    const paginated = await listTransactions(req.user.id, result.data);
+    const paginated = await listTransactions(user.id, result.data);
     res.json({ success: true, ...paginated });
   } catch (err) {
     next(err);
@@ -49,9 +51,10 @@ router.get('/', async (req: AuthenticatedRequest, res: Response, next: NextFunct
 });
 
 // GET /api/v1/transactions/:id
-router.get('/:id', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const transaction = await getTransaction(req.params.id, req.user.id);
+    const { user } = req as AuthenticatedRequest;
+    const transaction = await getTransaction(req.params.id as string, user.id);
     res.json({ success: true, data: transaction });
   } catch (err) {
     next(err);
@@ -59,8 +62,9 @@ router.get('/:id', async (req: AuthenticatedRequest, res: Response, next: NextFu
 });
 
 // POST /api/v1/transactions
-router.post('/', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { user } = req as AuthenticatedRequest;
     const result = createTransactionSchema.safeParse(req.body);
     if (!result.success) {
       const errors: Record<string, string[]> = {};
@@ -70,7 +74,7 @@ router.post('/', async (req: AuthenticatedRequest, res: Response, next: NextFunc
       });
       throw new ValidationError('Validation failed', errors);
     }
-    const transaction = await createTransaction({ userId: req.user.id, ...result.data });
+    const transaction = await createTransaction({ userId: user.id, ...result.data });
     res.status(201).json({ success: true, data: transaction });
   } catch (err) {
     next(err);
@@ -78,8 +82,9 @@ router.post('/', async (req: AuthenticatedRequest, res: Response, next: NextFunc
 });
 
 // PUT /api/v1/transactions/:id
-router.put('/:id', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { user } = req as AuthenticatedRequest;
     const result = updateTransactionSchema.safeParse(req.body);
     if (!result.success) {
       const errors: Record<string, string[]> = {};
@@ -89,7 +94,7 @@ router.put('/:id', async (req: AuthenticatedRequest, res: Response, next: NextFu
       });
       throw new ValidationError('Validation failed', errors);
     }
-    const transaction = await updateTransaction(req.params.id, req.user.id, result.data);
+    const transaction = await updateTransaction(req.params.id as string, user.id, result.data);
     res.json({ success: true, data: transaction });
   } catch (err) {
     next(err);
@@ -97,9 +102,10 @@ router.put('/:id', async (req: AuthenticatedRequest, res: Response, next: NextFu
 });
 
 // DELETE /api/v1/transactions/:id
-router.delete('/:id', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await deleteTransaction(req.params.id, req.user.id);
+    const { user } = req as AuthenticatedRequest;
+    await deleteTransaction(req.params.id as string, user.id);
     res.status(204).send();
   } catch (err) {
     next(err);
