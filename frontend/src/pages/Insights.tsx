@@ -35,9 +35,13 @@ export function Insights() {
   async function handleAsk(e: React.FormEvent) {
     e.preventDefault();
     if (!question.trim()) return;
-    const res = await askQ.mutateAsync(question.trim());
-    setAnswer(res);
-    setQuestion('');
+    try {
+      const res = await askQ.mutateAsync(question.trim());
+      setAnswer(res);
+      setQuestion('');
+    } catch {
+      // error state is surfaced via askQ.isError below
+    }
   }
 
   const insightData = insights.data?.insights;
@@ -244,6 +248,12 @@ export function Insights() {
           {askQ.isPending && (
             <div className="flex items-center gap-2 text-gray-400 font-body text-sm">
               <Loader2 size={16} className="animate-spin" /> Thinking...
+            </div>
+          )}
+
+          {askQ.isError && (
+            <div className="flex items-center gap-2 text-red-500 font-body text-sm">
+              <AlertCircle size={16} /> Could not get an answer. Please try again.
             </div>
           )}
 

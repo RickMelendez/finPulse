@@ -128,11 +128,16 @@ export function useDeleteAccount() {
 
 // --- Insights ---
 export function useInsights(period: string) {
+  const [year, month] = period.split('-').map(Number);
+  const periodStart = `${year}-${String(month).padStart(2, '0')}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const periodEnd = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
   return useQuery({
     queryKey: ['insights', period],
     queryFn: () =>
       api
-        .get('/insights', { params: { period } })
+        .get('/insights', { params: { periodStart, periodEnd } })
         .then((r) => r.data.data as SpendingInsight),
   });
 }
