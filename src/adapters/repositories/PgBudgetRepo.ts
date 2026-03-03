@@ -18,7 +18,7 @@ function toEntity(row: DbBudget): Budget {
   return {
     id: row.id,
     userId: row.user_id,
-    categoryId: row.category_id ?? undefined,
+    categoryId: row.category_id,
     amount: parseFloat(row.amount),
     period: row.period,
     startDate: new Date(row.start_date),

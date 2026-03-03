@@ -17,7 +17,7 @@ interface DbCategory {
 function toEntity(row: DbCategory): Category {
   return {
     id: row.id,
-    userId: row.user_id ?? undefined,
+    userId: row.user_id,
     name: row.name,
     icon: row.icon ?? undefined,
     color: row.color ?? undefined,
