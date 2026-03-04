@@ -222,9 +222,60 @@ export function Transactions() {
                 <div key={i} className="h-12 bg-gray-100 rounded-lg" />
               ))}
             </div>
+          ) : (data?.data ?? []).length === 0 ? (
+            <p className="text-center py-12 text-gray-400 font-body text-sm">
+              No transactions found
+            </p>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              {/* Mobile card list */}
+              <div className="sm:hidden divide-y divide-gray-50">
+                {(data?.data ?? []).map((tx) => (
+                  <div key={tx.id} className="flex items-center justify-between py-3">
+                    <div className="min-w-0 flex-1 pr-3">
+                      <p className="font-body font-medium text-primary-dark text-sm truncate">
+                        {tx.description}
+                      </p>
+                      <p className="font-body text-xs text-gray-400 mt-0.5">
+                        {new Date(tx.transactionDate).toLocaleDateString()} &middot;{' '}
+                        {catMap[tx.categoryId] ?? '—'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <p
+                          className={`font-heading font-semibold text-sm ${
+                            tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'
+                          }`}
+                        >
+                          {tx.type === 'income' ? '+' : '-'}
+                          {fmt(tx.amount)}
+                        </p>
+                        <Badge variant={tx.type}>{tx.type}</Badge>
+                      </div>
+                      <div className="flex flex-col gap-1 ml-1">
+                        <button
+                          onClick={() => openEdit(tx)}
+                          className="p-2 rounded-lg hover:bg-primary/10 text-primary-light transition-colors cursor-pointer"
+                          aria-label="Edit"
+                        >
+                          <Pencil size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(tx.id)}
+                          className="p-2 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
+                          aria-label="Delete"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full font-body text-sm">
                   <thead>
                     <tr className="border-b border-gray-100">
@@ -241,62 +292,51 @@ export function Transactions() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(data?.data ?? []).length === 0 ? (
-                      <tr>
+                    {(data?.data ?? []).map((tx) => (
+                      <tr
+                        key={tx.id}
+                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <td className="py-3 px-3 text-gray-500 whitespace-nowrap">
+                          {new Date(tx.transactionDate).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-3 text-primary-dark font-medium max-w-[200px] truncate">
+                          {tx.description}
+                        </td>
+                        <td className="py-3 px-3 text-gray-500">
+                          {catMap[tx.categoryId] ?? '—'}
+                        </td>
                         <td
-                          colSpan={6}
-                          className="text-center py-12 text-gray-400 font-body text-sm"
+                          className={`py-3 px-3 font-heading font-semibold whitespace-nowrap ${
+                            tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'
+                          }`}
                         >
-                          No transactions found
+                          {tx.type === 'income' ? '+' : '-'}
+                          {fmt(tx.amount)}
+                        </td>
+                        <td className="py-3 px-3">
+                          <Badge variant={tx.type}>{tx.type}</Badge>
+                        </td>
+                        <td className="py-3 px-3">
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => openEdit(tx)}
+                              className="p-1.5 rounded-lg hover:bg-primary/10 text-primary-light transition-colors cursor-pointer"
+                              aria-label="Edit"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(tx.id)}
+                              className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
+                              aria-label="Delete"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
-                    ) : (
-                      (data?.data ?? []).map((tx) => (
-                        <tr
-                          key={tx.id}
-                          className="border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150"
-                        >
-                          <td className="py-3 px-3 text-gray-500 whitespace-nowrap">
-                            {new Date(tx.transactionDate).toLocaleDateString()}
-                          </td>
-                          <td className="py-3 px-3 text-primary-dark font-medium max-w-[200px] truncate">
-                            {tx.description}
-                          </td>
-                          <td className="py-3 px-3 text-gray-500">
-                            {catMap[tx.categoryId] ?? '—'}
-                          </td>
-                          <td
-                            className={`py-3 px-3 font-heading font-semibold whitespace-nowrap ${
-                              tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'
-                            }`}
-                          >
-                            {tx.type === 'income' ? '+' : '-'}
-                            {fmt(tx.amount)}
-                          </td>
-                          <td className="py-3 px-3">
-                            <Badge variant={tx.type}>{tx.type}</Badge>
-                          </td>
-                          <td className="py-3 px-3">
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={() => openEdit(tx)}
-                                className="p-1.5 rounded-lg hover:bg-primary/10 text-primary-light transition-colors cursor-pointer"
-                                aria-label="Edit"
-                              >
-                                <Pencil size={14} />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(tx.id)}
-                                className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
-                                aria-label="Delete"
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
+                    ))}
                   </tbody>
                 </table>
               </div>
