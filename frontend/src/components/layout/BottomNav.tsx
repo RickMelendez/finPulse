@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
 export function BottomNav() {
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 flex items-stretch"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-border dark:border-slate-700 flex items-stretch"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       aria-label="Mobile navigation"
     >
@@ -38,8 +38,8 @@ export function BottomNav() {
             clsx(
               'flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-xs font-body font-medium',
               'transition-colors duration-150',
-              'focus:outline-none focus-visible:bg-primary/5',
-              isActive ? 'text-primary' : 'text-gray-400',
+              'focus:outline-none focus-visible:bg-brand/5',
+              isActive ? 'text-brand dark:text-brand-light' : 'text-slate-400 dark:text-slate-500',
             )
           }
         >

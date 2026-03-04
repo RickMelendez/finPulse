@@ -9,11 +9,11 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  income: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  expense: 'bg-red-50 text-red-700 border-red-200',
-  high: 'bg-red-50 text-red-700 border-red-200',
-  medium: 'bg-amber-50 text-amber-700 border-amber-200',
-  low: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  income: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+  expense: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
+  high: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800',
+  medium: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
+  low: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
 };
 
 export function Badge({ variant, children, className }: BadgeProps) {

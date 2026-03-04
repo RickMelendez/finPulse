@@ -14,7 +14,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className="flex flex-col gap-1">
         <label
           htmlFor={inputId}
-          className="text-sm font-medium font-body text-primary-dark"
+          className="text-sm font-medium font-body text-slate-700 dark:text-slate-300"
         >
           {label}
         </label>
@@ -22,13 +22,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={clsx(
-            'w-full px-3 py-2 rounded-lg border font-body text-sm text-primary-dark',
-            'bg-white placeholder:text-gray-400',
-            'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+            'w-full px-3 py-2.5 rounded-xl border font-body text-sm',
+            'text-slate-800 dark:text-slate-100',
+            'bg-white dark:bg-slate-800/50',
+            'placeholder:text-slate-400 dark:placeholder:text-slate-500',
+            'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent',
             'transition-all duration-150',
             error
               ? 'border-red-400 focus:ring-red-400'
-              : 'border-gray-200 hover:border-primary/40',
+              : 'border-border dark:border-slate-600 hover:border-brand/40',
             className,
           )}
           {...rest}
