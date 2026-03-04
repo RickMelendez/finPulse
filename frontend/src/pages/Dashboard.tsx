@@ -189,51 +189,82 @@ export function Dashboard() {
               No transactions yet
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full font-body text-sm">
-                <thead>
-                  <tr className="border-b border-gray-100">
-                    {['Date', 'Description', 'Category', 'Amount', 'Type'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left py-2 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {(recent.data?.data ?? []).map((tx) => (
-                    <tr
-                      key={tx.id}
-                      className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-default"
-                    >
-                      <td className="py-2 px-3 text-gray-500">
-                        {new Date(tx.transactionDate).toLocaleDateString()}
-                      </td>
-                      <td className="py-2 px-3 text-primary-dark font-medium">
+            <>
+              {/* Mobile card list */}
+              <div className="sm:hidden divide-y divide-gray-50">
+                {(recent.data?.data ?? []).map((tx) => (
+                  <div key={tx.id} className="flex items-center justify-between py-3">
+                    <div className="min-w-0 flex-1 pr-3">
+                      <p className="font-body font-medium text-primary-dark text-sm truncate">
                         {tx.description}
-                      </td>
-                      <td className="py-2 px-3 text-gray-500">
+                      </p>
+                      <p className="font-body text-xs text-gray-400 mt-0.5">
+                        {new Date(tx.transactionDate).toLocaleDateString()} &middot;{' '}
                         {catMap[tx.categoryId] ?? '—'}
-                      </td>
-                      <td
-                        className={`py-2 px-3 font-heading font-semibold ${
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p
+                        className={`font-heading font-semibold text-sm ${
                           tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'
                         }`}
                       >
                         {tx.type === 'income' ? '+' : '-'}
                         {fmt(tx.amount)}
-                      </td>
-                      <td className="py-2 px-3">
-                        <Badge variant={tx.type}>{tx.type}</Badge>
-                      </td>
+                      </p>
+                      <Badge variant={tx.type}>{tx.type}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full font-body text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      {['Date', 'Description', 'Category', 'Amount', 'Type'].map((h) => (
+                        <th
+                          key={h}
+                          className="text-left py-2 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                        >
+                          {h}
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {(recent.data?.data ?? []).map((tx) => (
+                      <tr
+                        key={tx.id}
+                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-default"
+                      >
+                        <td className="py-2 px-3 text-gray-500">
+                          {new Date(tx.transactionDate).toLocaleDateString()}
+                        </td>
+                        <td className="py-2 px-3 text-primary-dark font-medium">
+                          {tx.description}
+                        </td>
+                        <td className="py-2 px-3 text-gray-500">
+                          {catMap[tx.categoryId] ?? '—'}
+                        </td>
+                        <td
+                          className={`py-2 px-3 font-heading font-semibold ${
+                            tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'
+                          }`}
+                        >
+                          {tx.type === 'income' ? '+' : '-'}
+                          {fmt(tx.amount)}
+                        </td>
+                        <td className="py-2 px-3">
+                          <Badge variant={tx.type}>{tx.type}</Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
