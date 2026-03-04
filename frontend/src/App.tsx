@@ -19,7 +19,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-primary flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-brand flex flex-col items-center justify-center gap-4">
         <div className="flex items-center justify-center w-20 h-20 bg-accent rounded-3xl shadow-xl">
           <TrendingUp size={40} className="text-white" />
         </div>

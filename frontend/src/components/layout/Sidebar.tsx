@@ -35,9 +35,9 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 shrink-0 hidden md:flex flex-col bg-primary h-full">
+    <aside className="w-64 shrink-0 hidden md:flex flex-col bg-brand dark:bg-slate-900 h-full border-r border-white/10 dark:border-slate-700">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10">
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 dark:border-slate-700">
         <div className="flex items-center justify-center w-8 h-8 bg-accent rounded-lg shrink-0">
           <TrendingUp size={18} className="text-white" />
         </div>
@@ -55,7 +55,7 @@ export function Sidebar() {
             end={item.to === '/'}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-body font-medium',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-body font-medium',
                 'cursor-pointer transition-all duration-150',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
                 isActive
@@ -71,11 +71,11 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="px-3 pb-5 border-t border-white/10 pt-3">
+      <div className="px-3 pb-5 border-t border-white/10 dark:border-slate-700 pt-3">
         <button
           onClick={handleLogout}
           className={clsx(
-            'flex items-center gap-3 w-full px-3 py-2.5 rounded-lg',
+            'flex items-center gap-3 w-full px-3 py-2.5 rounded-xl',
             'text-sm font-body font-medium text-white/70',
             'hover:bg-white/5 hover:text-white',
             'cursor-pointer transition-all duration-150',
