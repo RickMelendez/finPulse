@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { TrendingUp } from 'lucide-react';
 import { useAuth } from './lib/auth';
 import { AppLayout } from './components/layout/AppLayout';
 import { Login } from './pages/Login';
@@ -11,18 +12,21 @@ import { Insights } from './pages/Insights';
 
 /**
  * Guards a route — redirects to /login when no auth token is present.
- * Shows a loading state while auth is being restored from localStorage.
+ * Shows a branded splash screen while auth is being restored from localStorage.
  */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-body text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-primary flex flex-col items-center justify-center gap-4">
+        <div className="flex items-center justify-center w-20 h-20 bg-accent rounded-3xl shadow-xl">
+          <TrendingUp size={40} className="text-white" />
         </div>
+        <span className="font-heading font-bold text-3xl text-white tracking-tight">
+          FinPulse
+        </span>
+        <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin mt-2" />
       </div>
     );
   }
