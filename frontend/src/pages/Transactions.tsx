@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
+import { SkeletonRow } from '../components/ui/Skeleton';
 import {
   useTransactions,
   useCreateTransaction,
@@ -17,6 +18,14 @@ import type { Transaction, TransactionType } from '../types';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+
+const inputCls =
+  'border border-border dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-body ' +
+  'text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800/50 ' +
+  'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ' +
+  'transition-colors duration-150';
+
+const selectFullCls = `w-full ${inputCls}`;
 
 interface TxForm {
   type: TransactionType;
@@ -114,7 +123,7 @@ export function Transactions() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-2xl font-bold text-primary-dark flex-1">
+        <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white flex-1">
           Transactions
         </h1>
         <Button variant="primary" size="sm" onClick={openCreate}>
@@ -127,14 +136,11 @@ export function Transactions() {
         <CardContent>
           <div className="flex flex-wrap gap-3 items-end">
             <div>
-              <label className="block text-xs font-body text-gray-500 mb-1">Type</label>
+              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">Type</label>
               <select
                 value={filterType}
-                onChange={(e) => {
-                  setFilterType(e.target.value);
-                  setPage(1);
-                }}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+                onChange={(e) => { setFilterType(e.target.value); setPage(1); }}
+                className={inputCls}
               >
                 <option value="">All</option>
                 <option value="income">Income</option>
@@ -143,49 +149,36 @@ export function Transactions() {
             </div>
 
             <div>
-              <label className="block text-xs font-body text-gray-500 mb-1">
-                Category
-              </label>
+              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">Category</label>
               <select
                 value={filterCategory}
-                onChange={(e) => {
-                  setFilterCategory(e.target.value);
-                  setPage(1);
-                }}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+                onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
+                className={inputCls}
               >
                 <option value="">All Categories</option>
                 {(categories.data ?? []).map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-body text-gray-500 mb-1">From</label>
+              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">From</label>
               <input
                 type="date"
                 value={startDate}
-                onChange={(e) => {
-                  setStartDate(e.target.value);
-                  setPage(1);
-                }}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+                onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+                className={inputCls}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-body text-gray-500 mb-1">To</label>
+              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">To</label>
               <input
                 type="date"
                 value={endDate}
-                onChange={(e) => {
-                  setEndDate(e.target.value);
-                  setPage(1);
-                }}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+                onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+                className={inputCls}
               />
             </div>
 
@@ -193,13 +186,7 @@ export function Transactions() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setFilterType('');
-                  setFilterCategory('');
-                  setStartDate('');
-                  setEndDate('');
-                  setPage(1);
-                }}
+                onClick={() => { setFilterType(''); setFilterCategory(''); setStartDate(''); setEndDate(''); setPage(1); }}
               >
                 Clear
               </Button>
@@ -217,53 +204,46 @@ export function Transactions() {
             </div>
           )}
           {isLoading ? (
-            <div className="space-y-2 animate-pulse">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-12 bg-gray-100 rounded-lg" />
-              ))}
+            <div className="divide-y divide-border dark:divide-slate-700">
+              {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
             </div>
           ) : (data?.data ?? []).length === 0 ? (
-            <p className="text-center py-12 text-gray-400 font-body text-sm">
+            <p className="text-center py-12 text-slate-400 dark:text-slate-500 font-body text-sm">
               No transactions found
             </p>
           ) : (
             <>
               {/* Mobile card list */}
-              <div className="sm:hidden divide-y divide-gray-50">
+              <div className="sm:hidden divide-y divide-border dark:divide-slate-700">
                 {(data?.data ?? []).map((tx) => (
                   <div key={tx.id} className="flex items-center justify-between py-3">
                     <div className="min-w-0 flex-1 pr-3">
-                      <p className="font-body font-medium text-primary-dark text-sm truncate">
+                      <p className="font-body font-medium text-slate-800 dark:text-slate-100 text-sm truncate">
                         {tx.description}
                       </p>
-                      <p className="font-body text-xs text-gray-400 mt-0.5">
+                      <p className="font-body text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                         {new Date(tx.transactionDate).toLocaleDateString()} &middot;{' '}
                         {catMap[tx.categoryId] ?? '—'}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
-                        <p
-                          className={`font-heading font-semibold text-sm ${
-                            tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'
-                          }`}
-                        >
-                          {tx.type === 'income' ? '+' : '-'}
-                          {fmt(tx.amount)}
+                        <p className={`font-heading font-semibold text-sm ${tx.type === 'income' ? 'text-income' : 'text-expense'}`}>
+                          {tx.type === 'income' ? '+' : '-'}{fmt(tx.amount)}
                         </p>
                         <Badge variant={tx.type}>{tx.type}</Badge>
                       </div>
                       <div className="flex flex-col gap-1 ml-1">
                         <button
                           onClick={() => openEdit(tx)}
-                          className="p-2 rounded-lg hover:bg-primary/10 text-primary-light transition-colors cursor-pointer"
+                          className="p-2 rounded-lg hover:bg-brand/10 text-brand dark:text-brand-light transition-colors cursor-pointer"
                           aria-label="Edit"
                         >
                           <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(tx.id)}
-                          className="p-2 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
+                          className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
                           aria-label="Delete"
                         >
                           <Trash2 size={15} />
@@ -278,41 +258,28 @@ export function Transactions() {
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full font-body text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100">
-                      {['Date', 'Description', 'Category', 'Amount', 'Type', 'Actions'].map(
-                        (h) => (
-                          <th
-                            key={h}
-                            className="text-left py-3 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider"
-                          >
-                            {h}
-                          </th>
-                        ),
-                      )}
+                    <tr className="border-b border-border dark:border-slate-700">
+                      {['Date', 'Description', 'Category', 'Amount', 'Type', 'Actions'].map((h) => (
+                        <th key={h} className="text-left py-3 px-3 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                          {h}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
                     {(data?.data ?? []).map((tx) => (
-                      <tr
-                        key={tx.id}
-                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors duration-150"
-                      >
-                        <td className="py-3 px-3 text-gray-500 whitespace-nowrap">
+                      <tr key={tx.id} className="border-b border-border dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-150">
+                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                           {new Date(tx.transactionDate).toLocaleDateString()}
                         </td>
-                        <td className="py-3 px-3 text-primary-dark font-medium max-w-[200px] truncate">
+                        <td className="py-3 px-3 text-slate-800 dark:text-slate-100 font-medium max-w-[200px] truncate">
                           {tx.description}
                         </td>
-                        <td className="py-3 px-3 text-gray-500">
+                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400">
                           {catMap[tx.categoryId] ?? '—'}
                         </td>
-                        <td
-                          className={`py-3 px-3 font-heading font-semibold whitespace-nowrap ${
-                            tx.type === 'income' ? 'text-emerald-600' : 'text-red-600'
-                          }`}
-                        >
-                          {tx.type === 'income' ? '+' : '-'}
-                          {fmt(tx.amount)}
+                        <td className={`py-3 px-3 font-heading font-semibold whitespace-nowrap ${tx.type === 'income' ? 'text-income' : 'text-expense'}`}>
+                          {tx.type === 'income' ? '+' : '-'}{fmt(tx.amount)}
                         </td>
                         <td className="py-3 px-3">
                           <Badge variant={tx.type}>{tx.type}</Badge>
@@ -321,14 +288,14 @@ export function Transactions() {
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => openEdit(tx)}
-                              className="p-1.5 rounded-lg hover:bg-primary/10 text-primary-light transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg hover:bg-brand/10 text-brand dark:text-brand-light transition-colors cursor-pointer"
                               aria-label="Edit"
                             >
                               <Pencil size={14} />
                             </button>
                             <button
                               onClick={() => handleDelete(tx.id)}
-                              className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
                               aria-label="Delete"
                             >
                               <Trash2 size={14} />
@@ -343,26 +310,15 @@ export function Transactions() {
 
               {/* Pagination */}
               {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                  <p className="font-body text-sm text-gray-500">
-                    Page {pagination.page} of {pagination.totalPages} &middot;{' '}
-                    {pagination.total} total
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border dark:border-slate-700">
+                  <p className="font-body text-sm text-slate-500 dark:text-slate-400">
+                    Page {pagination.page} of {pagination.totalPages} &middot; {pagination.total} total
                   </p>
                   <div className="flex gap-2">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setPage((p) => p - 1)}
-                      disabled={page <= 1}
-                    >
+                    <Button variant="secondary" size="sm" onClick={() => setPage((p) => p - 1)} disabled={page <= 1}>
                       Previous
                     </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setPage((p) => p + 1)}
-                      disabled={page >= pagination.totalPages}
-                    >
+                    <Button variant="secondary" size="sm" onClick={() => setPage((p) => p + 1)} disabled={page >= pagination.totalPages}>
                       Next
                     </Button>
                   </div>
@@ -374,126 +330,70 @@ export function Transactions() {
       </Card>
 
       {/* Add/Edit Modal */}
-      <Modal
-        isOpen={modalOpen}
-        onClose={closeModal}
-        title={editTx ? 'Edit Transaction' : 'Add Transaction'}
-      >
+      <Modal isOpen={modalOpen} onClose={closeModal} title={editTx ? 'Edit Transaction' : 'Add Transaction'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-3">
             {(['expense', 'income'] as TransactionType[]).map((t) => (
-              <label
-                key={t}
-                className="flex items-center gap-2 cursor-pointer font-body text-sm"
-              >
+              <label key={t} className="flex items-center gap-2 cursor-pointer font-body text-sm">
                 <input
                   type="radio"
                   name="type"
                   value={t}
                   checked={form.type === t}
                   onChange={() => setForm((f) => ({ ...f, type: t }))}
-                  className="accent-primary"
+                  className="accent-brand"
                 />
-                <span
-                  className={
-                    t === 'income'
-                      ? 'text-emerald-600 font-medium'
-                      : 'text-red-600 font-medium'
-                  }
-                >
+                <span className={t === 'income' ? 'text-income font-medium' : 'text-expense font-medium'}>
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </span>
               </label>
             ))}
           </div>
 
-          <Input
-            label="Amount"
-            type="number"
-            step="0.01"
-            min="0"
-            value={form.amount}
-            onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-            required
-          />
+          <Input label="Amount" type="number" step="0.01" min="0" value={form.amount}
+            onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} required />
 
-          <Input
-            label="Description"
-            value={form.description}
-            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            required
-          />
+          <Input label="Description" value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} required />
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">Category</label>
-            <select
-              value={form.categoryId}
-              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-              required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
-            >
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Category</label>
+            <select value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} required className={selectFullCls}>
               <option value="">Select category</option>
-              {(categories.data ?? [])
-                .filter((c) => !form.type || c.type === form.type)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">Account</label>
-            <select
-              value={form.accountId}
-              onChange={(e) => setForm((f) => ({ ...f, accountId: e.target.value }))}
-              required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
-            >
-              <option value="">Select account</option>
-              {(accounts.data ?? []).map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
+              {(categories.data ?? []).filter((c) => !form.type || c.type === form.type).map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">Date</label>
-            <input
-              type="date"
-              value={form.transactionDate}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, transactionDate: e.target.value }))
-              }
-              required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Account</label>
+            <select value={form.accountId} onChange={(e) => setForm((f) => ({ ...f, accountId: e.target.value }))} required className={selectFullCls}>
+              <option value="">Select account</option>
+              {(accounts.data ?? []).map((a) => (
+                <option key={a.id} value={a.id}>{a.name}</option>
+              ))}
+            </select>
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">
-              Notes (optional)
-            </label>
-            <textarea
-              value={form.notes}
-              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Date</label>
+            <input type="date" value={form.transactionDate}
+              onChange={(e) => setForm((f) => ({ ...f, transactionDate: e.target.value }))}
+              required className={selectFullCls} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Notes (optional)</label>
+            <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
               rows={2}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+              className={`${selectFullCls} resize-none`}
             />
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="ghost" onClick={closeModal}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              loading={createTx.isPending || updateTx.isPending}
-            >
+            <Button type="button" variant="ghost" onClick={closeModal}>Cancel</Button>
+            <Button type="submit" variant="primary" loading={createTx.isPending || updateTx.isPending}>
               {editTx ? 'Save Changes' : 'Add Transaction'}
             </Button>
           </div>
