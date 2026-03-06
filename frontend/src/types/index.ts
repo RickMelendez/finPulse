@@ -99,6 +99,24 @@ export interface SpendingInsight {
   expiresAt: string;
 }
 
+export interface BudgetPlanItem {
+  category: string;
+  currentMonthSpend: number;
+  recommendedMonthly: number;
+  percentOfIncome: number;
+  reasoning: string;
+  status: 'on_track' | 'reduce' | 'increase_ok';
+}
+
+export interface BudgetPlan {
+  savingsTarget: number;
+  savingsRate: number;
+  summary: string;
+  items: BudgetPlanItem[];
+  totalIncome: number;
+  totalExpenses: number;
+}
+
 export interface AuthUser {
   id: string;
   email: string;

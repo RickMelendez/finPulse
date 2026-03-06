@@ -36,6 +36,22 @@ export interface TrendData {
   topCategory: string;
 }
 
+export interface BudgetPlanItem {
+  category: string;
+  currentMonthSpend: number;
+  recommendedMonthly: number;
+  percentOfIncome: number;
+  reasoning: string;
+  status: 'on_track' | 'reduce' | 'increase_ok';
+}
+
+export interface BudgetPlan {
+  savingsTarget: number;
+  savingsRate: number;
+  summary: string;
+  items: BudgetPlanItem[];
+}
+
 const MODEL = 'claude-sonnet-4-6';
 
 export class ClaudeInsightsService {
@@ -155,6 +171,48 @@ Focus on spending trends, growth patterns, and projections. Provide 3-4 recommen
     } catch (err) {
       return { ok: false, model: MODEL, error: String(err) };
     }
+  }
+
+  async generateBudgetPlan(
+    income: number,
+    categorySpending: Array<{ name: string; spent: number }>,
+  ): Promise<BudgetPlan> {
+    const prompt = {
+      role: 'user' as const,
+      content: `You are a personal finance advisor. Create a personalized monthly budget plan based on this user's actual spending data. Use the 50/30/20 rule as a guide. Respond ONLY with valid JSON — no markdown, no explanation.
+
+Monthly Income: $${income.toFixed(2)}
+Current spending by category this month:
+${categorySpending.map(c => `- ${c.name}: $${c.spent.toFixed(2)}`).join('\n')}
+
+Required JSON response schema:
+{
+  "savingsTarget": <number>,
+  "savingsRate": <number: percentage>,
+  "summary": "2-3 sentences explaining the plan",
+  "items": [
+    {
+      "category": "name",
+      "currentMonthSpend": <number>,
+      "recommendedMonthly": <number>,
+      "percentOfIncome": <number>,
+      "reasoning": "1 sentence",
+      "status": "on_track|reduce|increase_ok"
+    }
+  ]
+}
+
+Include all provided categories. "on_track" = spending is appropriate, "reduce" = should cut back, "increase_ok" = under-budgeted.`,
+    };
+
+    const response = await this.client.messages.create({
+      model: MODEL,
+      max_tokens: 1500,
+      messages: [prompt],
+    });
+
+    const text = response.content[0].type === 'text' ? response.content[0].text : '';
+    return JSON.parse(stripFences(text)) as BudgetPlan;
   }
 
   async askQuestion(
