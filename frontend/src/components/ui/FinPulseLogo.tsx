@@ -27,9 +27,8 @@ export function FinPulseLogo({ size = 32, variant = 'full', className = '', ligh
     >
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#1e3a8a" />
-          <stop offset="45%" stopColor="#4338ca" />
-          <stop offset="100%" stopColor="#0891b2" />
+          <stop offset="0%" stopColor="#15803d" />
+          <stop offset="100%" stopColor="#16a34a" />
         </linearGradient>
       </defs>
 
@@ -76,14 +75,7 @@ export function FinPulseLogo({ size = 32, variant = 'full', className = '', ligh
         className="font-heading font-bold tracking-tight leading-none select-none"
         style={{
           fontSize: textSize,
-          ...(light
-            ? { color: 'white' }
-            : {
-                background: 'linear-gradient(135deg, #1e3a8a 0%, #4338ca 50%, #0891b2 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }),
+          color: light ? 'white' : '#15803d',
         }}
       >
         FinPulse
