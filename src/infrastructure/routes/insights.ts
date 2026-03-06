@@ -4,6 +4,7 @@ import { insightsQuerySchema, askQuestionSchema } from '../../shared/validators/
 import { generateSpendingInsights } from '../../usecases/GenerateSpendingInsights';
 import { getSpendingTrends } from '../../usecases/GetSpendingTrends';
 import { askFinanceQuestion } from '../../usecases/AskFinanceQuestion';
+import { generateBudgetPlan } from '../../usecases/GenerateBudgetPlan';
 import { ValidationError } from '../../shared/errors/ValidationError';
 
 const router = Router();
@@ -81,6 +82,18 @@ router.post('/ask', async (req: Request, res: Response, next: NextFunction) => {
     }
     const answer = await askFinanceQuestion(user.id, result.data.question);
     res.json({ success: true, data: { answer } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/insights/budget-plan
+// Generate an AI-powered monthly budget plan based on user's real income and expenses
+router.get('/budget-plan', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { user } = req as AuthenticatedRequest;
+    const plan = await generateBudgetPlan(user.id);
+    res.json({ success: true, data: plan });
   } catch (err) {
     next(err);
   }

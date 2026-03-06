@@ -6,11 +6,16 @@ import {
   Loader2,
   TrendingUp,
   ChevronRight,
+  Wand2,
+  TrendingDown,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import { useInsights, useInsightTrends, useAskQuestion } from '../hooks/useApi';
+import { useInsights, useInsightTrends, useAskQuestion, useGenerateBudgetPlan } from '../hooks/useApi';
+import type { BudgetPlan } from '../types';
 
 const inputCls =
   'border border-border dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-body ' +
@@ -29,10 +34,21 @@ export function Insights() {
   const [period, setPeriod] = useState(getPeriod());
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
+  const [budgetPlan, setBudgetPlan] = useState<BudgetPlan | null>(null);
 
   const insights = useInsights(period);
   const trends = useInsightTrends();
   const askQ = useAskQuestion();
+  const generatePlan = useGenerateBudgetPlan();
+
+  async function handleGeneratePlan() {
+    try {
+      const plan = await generatePlan.mutateAsync();
+      setBudgetPlan(plan);
+    } catch {
+      // error surfaced via generatePlan.isError
+    }
+  }
 
   async function handleAsk(e: React.FormEvent) {
     e.preventDefault();
@@ -202,6 +218,126 @@ export function Insights() {
             <p className="font-body text-slate-700 dark:text-slate-300 leading-relaxed bg-brand/5 dark:bg-brand/10 border-l-4 border-brand-light p-4 rounded-r-xl">
               {trends.data.summary}
             </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* AI Budget Planner */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Wand2 size={16} className="text-brand dark:text-brand-light" />
+              <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+                AI Budget Planner
+              </h2>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              loading={generatePlan.isPending}
+              onClick={handleGeneratePlan}
+            >
+              {budgetPlan ? 'Regenerate Plan' : 'Generate My Budget Plan'}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {!budgetPlan && !generatePlan.isPending && !generatePlan.isError && (
+            <div className="flex flex-col items-center py-10 gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-brand/10 dark:bg-brand/20 flex items-center justify-center">
+                <Wand2 size={28} className="text-brand dark:text-brand-light" />
+              </div>
+              <p className="font-body text-sm text-slate-500 dark:text-slate-400 text-center max-w-sm">
+                Click <strong>Generate My Budget Plan</strong> to get a personalized monthly budget
+                based on your real income and spending data — powered by Claude AI.
+              </p>
+            </div>
+          )}
+
+          {generatePlan.isPending && (
+            <div className="flex items-center justify-center py-12 gap-3 text-slate-400 dark:text-slate-500 font-body text-sm">
+              <Loader2 size={20} className="animate-spin" /> Analyzing your finances and building your plan...
+            </div>
+          )}
+
+          {generatePlan.isError && (
+            <div className="flex items-center gap-2 text-red-500 justify-center py-8 font-body text-sm">
+              <AlertCircle size={20} /> Could not generate budget plan. Please try again.
+            </div>
+          )}
+
+          {budgetPlan && !generatePlan.isPending && (
+            <div className="space-y-6">
+              {/* Summary */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-income/5 dark:bg-income/10 rounded-xl p-4">
+                  <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Monthly Income</p>
+                  <p className="font-heading text-xl font-bold text-income">{fmt(budgetPlan.totalIncome)}</p>
+                </div>
+                <div className="bg-expense/5 dark:bg-expense/10 rounded-xl p-4">
+                  <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Current Expenses</p>
+                  <p className="font-heading text-xl font-bold text-expense">{fmt(budgetPlan.totalExpenses)}</p>
+                </div>
+                <div className="bg-brand/5 dark:bg-brand/10 rounded-xl p-4">
+                  <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Savings Target</p>
+                  <p className="font-heading text-xl font-bold text-brand dark:text-brand-light">
+                    {fmt(budgetPlan.savingsTarget)} <span className="text-sm font-normal text-slate-400">({budgetPlan.savingsRate.toFixed(0)}%)</span>
+                  </p>
+                </div>
+              </div>
+
+              <p className="font-body text-slate-700 dark:text-slate-300 leading-relaxed bg-brand/5 dark:bg-brand/10 border-l-4 border-brand p-4 rounded-r-xl text-sm">
+                {budgetPlan.summary}
+              </p>
+
+              {/* Budget table */}
+              <div className="overflow-x-auto">
+                <table className="w-full font-body text-sm">
+                  <thead>
+                    <tr className="border-b border-border dark:border-slate-700">
+                      {['Category', 'Current Spend', 'Recommended', '% of Income', 'Status', 'Reasoning'].map((h) => (
+                        <th key={h} className="text-left py-2 px-3 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {budgetPlan.items.map((item) => (
+                      <tr key={item.category} className="border-b border-border dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="py-3 px-3 font-semibold text-slate-800 dark:text-slate-100 whitespace-nowrap">{item.category}</td>
+                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400">{fmt(item.currentMonthSpend)}</td>
+                        <td className="py-3 px-3 font-semibold text-slate-800 dark:text-slate-100">{fmt(item.recommendedMonthly)}</td>
+                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400">{item.percentOfIncome.toFixed(0)}%</td>
+                        <td className="py-3 px-3">
+                          {item.status === 'on_track' && (
+                            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+                              <CheckCircle2 size={12} /> On Track
+                            </span>
+                          )}
+                          {item.status === 'reduce' && (
+                            <span className="flex items-center gap-1 text-expense text-xs font-semibold">
+                              <TrendingDown size={12} /> Reduce
+                            </span>
+                          )}
+                          {item.status === 'increase_ok' && (
+                            <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-xs font-semibold">
+                              <XCircle size={12} /> Under Budget
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400 text-xs max-w-[240px]">{item.reasoning}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="font-body text-xs text-slate-400 dark:text-slate-500">
+                Budget plan generated by Claude AI based on your current month's real transactions.
+              </p>
+            </div>
           )}
         </CardContent>
       </Card>

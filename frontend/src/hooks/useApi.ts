@@ -8,6 +8,7 @@ import type {
   TransactionSummary,
   SpendingInsight,
   InsightResult,
+  BudgetPlan,
 } from '../types';
 
 // --- Transactions ---
@@ -156,5 +157,12 @@ export function useAskQuestion() {
       api
         .post('/insights/ask', { question })
         .then((r) => r.data.data.answer as string),
+  });
+}
+
+export function useGenerateBudgetPlan() {
+  return useMutation({
+    mutationFn: () =>
+      api.get('/insights/budget-plan').then((r) => r.data.data as BudgetPlan),
   });
 }
