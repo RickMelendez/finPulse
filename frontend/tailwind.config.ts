@@ -43,6 +43,14 @@ export default {
           '0%': { backgroundPosition: '-200% center' },
           '100%': { backgroundPosition: '200% center' },
         },
+        twinkle: {
+          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+          '50%': { opacity: '0.05', transform: 'scale(0.5)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-12px)' },
+        },
         'slide-in-right': {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
@@ -61,6 +69,8 @@ export default {
         'slide-in-right': 'slide-in-right 0.25s ease-out',
         'fade-in': 'fade-in 0.2s ease-out',
         'count-up': 'count-up 0.3s ease-out',
+        twinkle: 'twinkle 3s ease-in-out infinite',
+        float: 'float 6s ease-in-out infinite',
       },
     },
   },

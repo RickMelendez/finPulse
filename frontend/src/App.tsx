@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { TrendingUp } from 'lucide-react';
 import { useAuth } from './lib/auth';
+import { FinPulseLogo } from './components/ui/FinPulseLogo';
 import { AppLayout } from './components/layout/AppLayout';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -19,14 +19,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-brand flex flex-col items-center justify-center gap-4">
-        <div className="flex items-center justify-center w-20 h-20 bg-accent rounded-3xl shadow-xl">
-          <TrendingUp size={40} className="text-white" />
-        </div>
-        <span className="font-heading font-bold text-3xl text-white tracking-tight">
-          FinPulse
-        </span>
-        <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin mt-2" />
+      <div
+        className="min-h-screen flex flex-col items-center justify-center gap-5"
+        style={{ background: 'linear-gradient(135deg, #020617 0%, #0c0a2e 50%, #0f172a 100%)' }}
+      >
+        <FinPulseLogo size={64} variant="icon" />
+        <FinPulseLogo size={40} variant="full" light className="opacity-90" />
+        <div className="w-5 h-5 border-2 border-white/20 border-t-white/70 rounded-full animate-spin mt-1" />
       </div>
     );
   }

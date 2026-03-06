@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  TrendingUp,
   LayoutDashboard,
   ArrowLeftRight,
   Target,
@@ -10,6 +9,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../../lib/auth';
+import { FinPulseLogo } from '../ui/FinPulseLogo';
 
 interface NavItem {
   to: string;
@@ -37,13 +37,8 @@ export function Sidebar() {
   return (
     <aside className="w-64 shrink-0 hidden md:flex flex-col bg-brand dark:bg-slate-900 h-full border-r border-white/10 dark:border-slate-700">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 dark:border-slate-700">
-        <div className="flex items-center justify-center w-8 h-8 bg-accent rounded-lg shrink-0">
-          <TrendingUp size={18} className="text-white" />
-        </div>
-        <span className="font-heading font-bold text-lg text-white tracking-tight">
-          FinPulse
-        </span>
+      <div className="flex items-center px-5 py-5 border-b border-white/10 dark:border-slate-700">
+        <FinPulseLogo size={30} variant="full" light />
       </div>
 
       {/* Navigation */}
