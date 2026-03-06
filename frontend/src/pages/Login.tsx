@@ -6,9 +6,14 @@ import { AlertCircle, Eye, EyeOff, CheckCircle2, ArrowRight } from 'lucide-react
 import { useAuth } from '../lib/auth';
 import { Button } from '../components/ui/Button';
 import { FinPulseLogo } from '../components/ui/FinPulseLogo';
-import api from '../lib/api';
+import api, { setTokens } from '../lib/api';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+
+function getApiError(err: unknown, fallback: string): string {
+  const apiMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+  return apiMsg ?? (err instanceof Error ? err.message : fallback);
+}
 
 // ── Deterministic star positions (avoids re-render jitter) ──────────────────
 const BG_STARS = Array.from({ length: 50 }, (_, i) => ({
@@ -17,7 +22,6 @@ const BG_STARS = Array.from({ length: 50 }, (_, i) => ({
   top: (i * 7.3 + 3) % 100,
   left: (i * 13.7 + 5) % 100,
   opacity: 0.15 + ((i * 0.06) % 0.55),
-  delay: (i * 0.4) % 4,
 }));
 
 const CARD_STARS = Array.from({ length: 18 }, (_, i) => ({
@@ -37,24 +41,36 @@ function FinPulseCard() {
   const rotate = useRef({ x: 0, y: 0 });
   const target = useRef({ x: 0, y: 0 });
   const mousePos = useRef({ px: 0.5, py: 0.5 });
+  const isAnimating = useRef(false);
 
-  useEffect(() => {
+  // Start RAF loop only on demand; stop automatically when settled.
+  const startAnimation = () => {
+    if (isAnimating.current) return;
+    isAnimating.current = true;
     const animate = () => {
-      rotate.current.x += (target.current.x - rotate.current.x) * 0.08;
-      rotate.current.y += (target.current.y - rotate.current.y) * 0.08;
+      const dx = target.current.x - rotate.current.x;
+      const dy = target.current.y - rotate.current.y;
+      rotate.current.x += dx * 0.08;
+      rotate.current.y += dy * 0.08;
 
-      if (cardRef.current) {
-        cardRef.current.style.transform = `perspective(900px) rotateX(${rotate.current.x}deg) rotateY(${rotate.current.y}deg)`;
+      if (Math.abs(dx) > 0.005 || Math.abs(dy) > 0.005) {
+        if (cardRef.current) {
+          cardRef.current.style.transform = `perspective(900px) rotateX(${rotate.current.x}deg) rotateY(${rotate.current.y}deg)`;
+        }
+        if (holoRef.current) {
+          const { px, py } = mousePos.current;
+          holoRef.current.style.background = `radial-gradient(circle at ${px * 100}% ${py * 100}%, rgba(255,255,255,0.18) 0%, rgba(139,92,246,0.08) 40%, transparent 65%)`;
+        }
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        // Settled — stop the loop until next mouse event
+        isAnimating.current = false;
       }
-      if (holoRef.current) {
-        const { px, py } = mousePos.current;
-        holoRef.current.style.background = `radial-gradient(circle at ${px * 100}% ${py * 100}%, rgba(255,255,255,0.18) 0%, rgba(139,92,246,0.08) 40%, transparent 65%)`;
-      }
-      rafRef.current = requestAnimationFrame(animate);
     };
     rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
+  };
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -66,10 +82,12 @@ function FinPulseCard() {
       x: (py - 0.5) * 22,
       y: (px - 0.5) * -22,
     };
+    startAnimation();
   };
 
   const handleMouseLeave = () => {
     target.current = { x: 0, y: 0 };
+    startAnimation();
   };
 
   return (
@@ -293,8 +311,7 @@ export function Login() {
       await login(loginEmail.trim(), loginPassword);
       navigate('/', { replace: true });
     } catch (err: unknown) {
-      const apiMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(apiMsg ?? (err instanceof Error ? err.message : 'Invalid credentials. Please try again.'));
+      setError(getApiError(err, 'Invalid credentials. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -321,8 +338,7 @@ export function Login() {
       await register(regEmail.trim(), regPassword);
       navigate('/', { replace: true });
     } catch (err: unknown) {
-      const apiMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(apiMsg ?? (err instanceof Error ? err.message : 'Registration failed. Please try again.'));
+      setError(getApiError(err, 'Registration failed. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -337,11 +353,13 @@ export function Login() {
         '/auth/google',
         { idToken: credentialResponse.credential },
       );
-      localStorage.setItem('token', data.token);
+      // Google auth returns a single token; store under the correct key so
+      // the Axios interceptor picks it up. Empty refresh token means the
+      // interceptor will gracefully redirect to /login when it expires.
+      setTokens(data.token, '');
       window.location.href = '/';
     } catch (err: unknown) {
-      const apiMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(apiMsg ?? 'Google sign-in failed. Please try again.');
+      setError(getApiError(err, 'Google sign-in failed. Please try again.'));
       setLoading(false);
     }
   };

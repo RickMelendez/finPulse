@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useId } from 'react';
 
 interface Props {
   /** Base size for the icon square (px). Text scales proportionally. */
@@ -11,8 +11,9 @@ interface Props {
 }
 
 export function FinPulseLogo({ size = 32, variant = 'full', className = '', light = false }: Props) {
-  const idRef = useRef(`fp-${Math.random().toString(36).slice(2, 8)}`);
-  const gradId = idRef.current;
+  const uid = useId();
+  // Strip colons from React's useId output — SVG IDs cannot contain colons
+  const gradId = `fp${uid.replace(/:/g, '')}`;
 
   const icon = (
     <svg
