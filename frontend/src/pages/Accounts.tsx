@@ -3,10 +3,15 @@ import { Plus, Trash2, Wallet, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
+import { SkeletonStat } from '../components/ui/Skeleton';
+import { AnimatedNumber } from '../components/ui/AnimatedNumber';
 import { useAccounts, useCreateAccount, useDeleteAccount } from '../hooks/useApi';
 
-const fmt = (n: number) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+const inputCls =
+  'w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm font-body ' +
+  'text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800/50 ' +
+  'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ' +
+  'transition-colors duration-150';
 
 interface AccountForm {
   name: string;
@@ -15,13 +20,7 @@ interface AccountForm {
   currency: string;
 }
 
-const defaultForm: AccountForm = {
-  name: '',
-  type: 'checking',
-  balance: '0',
-  currency: 'USD',
-};
-
+const defaultForm: AccountForm = { name: '', type: 'checking', balance: '0', currency: 'USD' };
 const ACCOUNT_TYPES = ['checking', 'savings', 'credit', 'investment', 'cash'];
 
 export function Accounts() {
@@ -55,16 +54,13 @@ export function Accounts() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="flex-1">
-          <h1 className="font-heading text-2xl font-bold text-primary-dark">Accounts</h1>
-          <p className="font-body text-sm text-gray-500 mt-0.5">
+          <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white">Accounts</h1>
+          <p className="font-body text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Total balance:{' '}
-            <span
-              className={`font-semibold ${
-                totalBalance >= 0 ? 'text-emerald-600' : 'text-red-600'
-              }`}
-            >
-              {fmt(totalBalance)}
-            </span>
+            <AnimatedNumber
+              value={totalBalance}
+              className={`font-semibold ${totalBalance >= 0 ? 'text-income' : 'text-expense'}`}
+            />
           </p>
         </div>
         <Button variant="primary" size="sm" onClick={() => setModalOpen(true)}>
@@ -79,131 +75,80 @@ export function Accounts() {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 animate-pulse">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-gray-200 rounded-xl" />
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => <SkeletonStat key={i} />)}
         </div>
       ) : (accounts ?? []).length === 0 ? (
         <Card>
           <CardContent>
-            <div className="flex flex-col items-center py-16 text-gray-400">
+            <div className="flex flex-col items-center py-16 text-slate-400 dark:text-slate-500">
               <Wallet size={48} className="mb-3 opacity-30" />
-              <p className="font-body text-sm">
-                No accounts yet. Add one to get started.
-              </p>
+              <p className="font-body text-sm">No accounts yet. Add one to get started.</p>
             </div>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {(accounts ?? []).map((a) => (
-            <Card key={a.id}>
+            <Card key={a.id} className="border-l-4 border-l-brand">
               <CardContent>
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="font-heading font-semibold text-primary-dark">{a.name}</p>
-                    <span className="text-xs font-body text-gray-400 capitalize">
-                      {a.type}
-                    </span>
+                    <p className="font-heading font-semibold text-slate-800 dark:text-white">{a.name}</p>
+                    <span className="text-xs font-body text-slate-400 dark:text-slate-500 capitalize">{a.type}</span>
                   </div>
                   <button
                     onClick={() => handleDelete(a.id)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
                     aria-label="Delete account"
                   >
                     <Trash2 size={14} />
                   </button>
                 </div>
-                <p
-                  className={`font-heading text-2xl font-bold ${
-                    a.balance >= 0 ? 'text-emerald-600' : 'text-red-600'
-                  }`}
-                >
-                  {fmt(a.balance)}
-                </p>
-                <p className="font-body text-xs text-gray-400 mt-1">{a.currency}</p>
+                <AnimatedNumber
+                  value={a.balance}
+                  className={`font-heading text-2xl font-bold ${a.balance >= 0 ? 'text-income' : 'text-expense'}`}
+                />
+                <p className="font-body text-xs text-slate-400 dark:text-slate-500 mt-1">{a.currency}</p>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
 
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Add Account"
-      >
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Account">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">
-              Account Name
-            </label>
-            <input
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              required
-              placeholder="e.g. Main Checking"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Account Name</label>
+            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              required placeholder="e.g. Main Checking" className={inputCls} />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">Type</label>
-            <select
-              value={form.type}
-              onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
-            >
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Type</label>
+            <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))} className={inputCls}>
               {ACCOUNT_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
-                </option>
+                <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">
-              Initial Balance ($)
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={form.balance}
-              onChange={(e) => setForm((f) => ({ ...f, balance: e.target.value }))}
-              required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Initial Balance ($)</label>
+            <input type="number" step="0.01" value={form.balance}
+              onChange={(e) => setForm((f) => ({ ...f, balance: e.target.value }))} required className={inputCls} />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">Currency</label>
-            <input
-              value={form.currency}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))
-              }
-              maxLength={3}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30 uppercase"
-            />
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Currency</label>
+            <input value={form.currency}
+              onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))}
+              maxLength={3} className={`${inputCls} uppercase`} />
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              loading={createAccount.isPending}
-            >
-              Add Account
-            </Button>
+            <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="primary" loading={createAccount.isPending}>Add Account</Button>
           </div>
         </form>
       </Modal>

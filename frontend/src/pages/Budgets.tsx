@@ -3,10 +3,17 @@ import { Plus, Trash2, Target, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
+import { SkeletonCard } from '../components/ui/Skeleton';
 import { useBudgets, useCreateBudget, useDeleteBudget, useCategories } from '../hooks/useApi';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+
+const inputCls =
+  'w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm font-body ' +
+  'text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800/50 ' +
+  'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ' +
+  'transition-colors duration-150';
 
 interface BudgetForm {
   name: string;
@@ -55,15 +62,15 @@ export function Budgets() {
   }
 
   function getBarColor(pct: number, over: boolean) {
-    if (over) return 'bg-red-500';
-    if (pct >= 80) return 'bg-amber-400';
-    return 'bg-emerald-500';
+    if (over) return 'bg-expense';
+    if (pct >= 80) return 'bg-warning';
+    return 'bg-income';
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <h1 className="font-heading text-2xl font-bold text-primary-dark flex-1">
+        <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white flex-1">
           Budgets
         </h1>
         <Button variant="primary" size="sm" onClick={() => setModalOpen(true)}>
@@ -78,15 +85,13 @@ export function Budgets() {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 animate-pulse">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-36 bg-gray-200 rounded-xl" />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => <SkeletonCard key={i} h={160} />)}
         </div>
       ) : (budgets ?? []).length === 0 ? (
         <Card>
           <CardContent>
-            <div className="flex flex-col items-center py-16 text-gray-400">
+            <div className="flex flex-col items-center py-16 text-slate-400 dark:text-slate-500">
               <Target size={48} className="mb-3 opacity-30" />
               <p className="font-body text-sm">
                 No budgets yet. Create one to track your spending.
@@ -103,16 +108,16 @@ export function Budgets() {
                 <CardContent>
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="font-heading font-semibold text-primary-dark">
+                      <p className="font-heading font-semibold text-slate-800 dark:text-white">
                         {b.name}
                       </p>
-                      <span className="text-xs font-body text-gray-400 capitalize">
+                      <span className="text-xs font-body text-slate-400 dark:text-slate-500 capitalize">
                         {b.period}
                       </span>
                     </div>
                     <button
                       onClick={() => handleDelete(b.id)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
                       aria-label="Delete budget"
                     >
                       <Trash2 size={14} />
@@ -120,21 +125,18 @@ export function Budgets() {
                   </div>
 
                   <div className="flex justify-between font-body text-sm mb-2">
-                    <span className="text-gray-500">
+                    <span className="text-slate-500 dark:text-slate-400">
                       Spent:{' '}
-                      <span className="font-semibold text-primary-dark">
+                      <span className="font-semibold text-slate-800 dark:text-white">
                         {fmt(b.spent)}
                       </span>
                     </span>
-                    <span className="text-gray-400">of {fmt(b.amount)}</span>
+                    <span className="text-slate-400 dark:text-slate-500">of {fmt(b.amount)}</span>
                   </div>
 
-                  <div className="w-full bg-gray-100 rounded-full h-2.5 mb-2">
+                  <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 mb-2">
                     <div
-                      className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(
-                        b.percentUsed,
-                        b.isOverBudget,
-                      )}`}
+                      className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(b.percentUsed, b.isOverBudget)}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -143,10 +145,10 @@ export function Budgets() {
                     <span
                       className={
                         b.isOverBudget
-                          ? 'text-red-500 font-semibold'
+                          ? 'text-expense font-semibold'
                           : b.isNearLimit
-                            ? 'text-amber-500 font-semibold'
-                            : 'text-gray-400'
+                            ? 'text-warning font-semibold'
+                            : 'text-income font-semibold'
                       }
                     >
                       {b.isOverBudget
@@ -155,7 +157,7 @@ export function Budgets() {
                           ? 'Near limit'
                           : `${fmt(b.remaining)} remaining`}
                     </span>
-                    <span className="text-gray-400">{b.percentUsed.toFixed(0)}%</span>
+                    <span className="text-slate-400 dark:text-slate-500">{b.percentUsed.toFixed(0)}%</span>
                   </div>
                 </CardContent>
               </Card>
@@ -164,14 +166,10 @@ export function Budgets() {
         </div>
       )}
 
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Add Budget"
-      >
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Budget">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
               Budget Name
             </label>
             <input
@@ -179,12 +177,12 @@ export function Budgets() {
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               required
               placeholder="e.g. Monthly Groceries"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
               Amount ($)
             </label>
             <input
@@ -194,16 +192,16 @@ export function Budgets() {
               value={form.amount}
               onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
               required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">Period</label>
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Period</label>
             <select
               value={form.period}
               onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className={inputCls}
             >
               <option value="monthly">Monthly</option>
               <option value="weekly">Weekly</option>
@@ -212,7 +210,7 @@ export function Budgets() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
               Start Date
             </label>
             <input
@@ -220,41 +218,31 @@ export function Budgets() {
               value={form.startDate}
               onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
               required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-gray-700 mb-1">
+            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
               Category (optional)
             </label>
             <select
               value={form.categoryId}
               onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className={inputCls}
             >
               <option value="">All Categories</option>
               {(categories.data ?? []).map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setModalOpen(false)}
-            >
+            <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              loading={createBudget.isPending}
-            >
+            <Button type="submit" variant="primary" loading={createBudget.isPending}>
               Create Budget
             </Button>
           </div>

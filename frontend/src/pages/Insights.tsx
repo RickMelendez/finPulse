@@ -12,16 +12,18 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { useInsights, useInsightTrends, useAskQuestion } from '../hooks/useApi';
 
+const inputCls =
+  'border border-border dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-body ' +
+  'text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800/50 ' +
+  'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ' +
+  'transition-colors duration-150';
+
 function getPeriod() {
   return new Date().toISOString().slice(0, 7);
 }
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(n);
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
 export function Insights() {
   const [period, setPeriod] = useState(getPeriod());
@@ -40,7 +42,7 @@ export function Insights() {
       setAnswer(res);
       setQuestion('');
     } catch {
-      // error state is surfaced via askQ.isError below
+      // error state surfaced via askQ.isError
     }
   }
 
@@ -53,16 +55,16 @@ export function Insights() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-2xl font-bold text-primary-dark flex-1">
+        <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white flex-1">
           AI Insights
         </h1>
         <div className="flex items-center gap-2">
-          <label className="font-body text-sm text-gray-500">Period:</label>
+          <label className="font-body text-sm text-slate-500 dark:text-slate-400">Period:</label>
           <input
             type="month"
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className={inputCls}
           />
         </div>
       </div>
@@ -72,14 +74,14 @@ export function Insights() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-accent" />
-            <h2 className="font-heading text-sm font-semibold text-primary-dark">
+            <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
               Monthly Summary &mdash; {period}
             </h2>
           </div>
         </CardHeader>
         <CardContent>
           {insights.isLoading && (
-            <div className="flex items-center justify-center py-12 gap-3 text-gray-400 font-body text-sm">
+            <div className="flex items-center justify-center py-12 gap-3 text-slate-400 dark:text-slate-500 font-body text-sm">
               <Loader2 size={20} className="animate-spin" /> Generating AI insights...
             </div>
           )}
@@ -91,33 +93,30 @@ export function Insights() {
           {insightData && (
             <div className="space-y-6">
               {/* Summary */}
-              <p className="font-body text-gray-700 leading-relaxed bg-primary/5 border-l-4 border-primary p-4 rounded-r-xl">
+              <p className="font-body text-slate-700 dark:text-slate-300 leading-relaxed bg-brand/5 dark:bg-brand/10 border-l-4 border-brand p-4 rounded-r-xl">
                 {insightData.summary}
               </p>
 
               {/* Recommendations */}
               <div>
-                <h3 className="font-heading text-sm font-semibold text-primary-dark mb-3">
+                <h3 className="font-heading text-sm font-semibold text-slate-800 dark:text-white mb-3">
                   Recommendations
                 </h3>
                 <div className="space-y-2">
                   {insightData.recommendations.map((rec, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                      className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                     >
-                      <ChevronRight
-                        size={16}
-                        className="text-primary-light mt-0.5 flex-shrink-0"
-                      />
+                      <ChevronRight size={16} className="text-brand-light mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <p className="font-body font-semibold text-sm text-primary-dark">
+                          <p className="font-body font-semibold text-sm text-slate-800 dark:text-white">
                             {rec.title}
                           </p>
                           <Badge variant={rec.priority}>{rec.priority}</Badge>
                         </div>
-                        <p className="font-body text-sm text-gray-500">
+                        <p className="font-body text-sm text-slate-500 dark:text-slate-400">
                           {rec.description}
                         </p>
                       </div>
@@ -129,22 +128,22 @@ export function Insights() {
               {/* Top Categories */}
               {topCategories.length > 0 && (
                 <div>
-                  <h3 className="font-heading text-sm font-semibold text-primary-dark mb-3">
+                  <h3 className="font-heading text-sm font-semibold text-slate-800 dark:text-white mb-3">
                     Top Spending Categories
                   </h3>
                   <div className="space-y-2">
                     {topCategories.slice(0, 6).map(([name, value]) => (
                       <div key={name} className="flex items-center gap-3">
-                        <span className="font-body text-sm text-gray-600 w-28 truncate">
+                        <span className="font-body text-sm text-slate-600 dark:text-slate-400 w-28 truncate">
                           {name}
                         </span>
-                        <div className="flex-1 bg-gray-100 rounded-full h-2">
+                        <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
                           <div
-                            className="bg-primary-light h-2 rounded-full transition-all duration-500"
+                            className="bg-brand-light h-2 rounded-full transition-all duration-500"
                             style={{ width: `${(value / maxCat) * 100}%` }}
                           />
                         </div>
-                        <span className="font-heading text-sm font-semibold text-primary-dark w-20 text-right">
+                        <span className="font-heading text-sm font-semibold text-slate-800 dark:text-white w-20 text-right">
                           {fmt(value)}
                         </span>
                       </div>
@@ -156,26 +155,17 @@ export function Insights() {
               {/* Anomalies */}
               {insightData.anomalies && insightData.anomalies.length > 0 && (
                 <div>
-                  <h3 className="font-heading text-sm font-semibold text-primary-dark mb-3">
+                  <h3 className="font-heading text-sm font-semibold text-slate-800 dark:text-white mb-3">
                     Anomalies Detected
                   </h3>
                   <div className="space-y-2">
                     {insightData.anomalies.map((a, i) => (
-                      <div
-                        key={i}
-                        className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-100"
-                      >
-                        <AlertCircle
-                          size={16}
-                          className="text-amber-500 mt-0.5 flex-shrink-0"
-                        />
+                      <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                        <AlertCircle size={16} className="text-amber-500 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="font-body text-sm text-gray-700">
-                            {a.description}
-                          </p>
-                          <p className="font-heading text-xs text-amber-600 mt-0.5">
-                            {fmt(a.amount)} &middot;{' '}
-                            <Badge variant={a.severity}>{a.severity}</Badge>
+                          <p className="font-body text-sm text-slate-700 dark:text-slate-300">{a.description}</p>
+                          <p className="font-heading text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                            {fmt(a.amount)} &middot; <Badge variant={a.severity}>{a.severity}</Badge>
                           </p>
                         </div>
                       </div>
@@ -184,7 +174,7 @@ export function Insights() {
                 </div>
               )}
 
-              <p className="font-body text-xs text-gray-400">
+              <p className="font-body text-xs text-slate-400 dark:text-slate-500">
                 Generated by {insightData.modelUsed}
               </p>
             </div>
@@ -196,20 +186,20 @@ export function Insights() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <TrendingUp size={16} className="text-primary-light" />
-            <h2 className="font-heading text-sm font-semibold text-primary-dark">
+            <TrendingUp size={16} className="text-brand-light" />
+            <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
               3-Month Trends
             </h2>
           </div>
         </CardHeader>
         <CardContent>
           {trends.isLoading && (
-            <div className="flex items-center justify-center py-8 gap-3 text-gray-400 font-body text-sm">
+            <div className="flex items-center justify-center py-8 gap-3 text-slate-400 dark:text-slate-500 font-body text-sm">
               <Loader2 size={18} className="animate-spin" /> Analyzing trends...
             </div>
           )}
           {trends.data && (
-            <p className="font-body text-gray-700 leading-relaxed bg-primary/5 border-l-4 border-primary-light p-4 rounded-r-xl">
+            <p className="font-body text-slate-700 dark:text-slate-300 leading-relaxed bg-brand/5 dark:bg-brand/10 border-l-4 border-brand-light p-4 rounded-r-xl">
               {trends.data.summary}
             </p>
           )}
@@ -221,7 +211,7 @@ export function Insights() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Send size={16} className="text-accent" />
-            <h2 className="font-heading text-sm font-semibold text-primary-dark">
+            <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
               Ask Your Financial Advisor
             </h2>
           </div>
@@ -232,21 +222,15 @@ export function Insights() {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="e.g. How much did I spend on food this month?"
-              className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className={`flex-1 ${inputCls}`}
             />
-            <Button
-              type="submit"
-              variant="primary"
-              size="sm"
-              loading={askQ.isPending}
-              disabled={!question.trim()}
-            >
+            <Button type="submit" variant="primary" size="sm" loading={askQ.isPending} disabled={!question.trim()}>
               <Send size={14} className="mr-1" /> Ask
             </Button>
           </form>
 
           {askQ.isPending && (
-            <div className="flex items-center gap-2 text-gray-400 font-body text-sm">
+            <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 font-body text-sm">
               <Loader2 size={16} className="animate-spin" /> Thinking...
             </div>
           )}
@@ -258,7 +242,7 @@ export function Insights() {
           )}
 
           {answer && !askQ.isPending && (
-            <div className="bg-primary/5 border-l-4 border-primary p-4 rounded-r-xl font-body text-sm text-gray-700 leading-relaxed">
+            <div className="bg-income/5 dark:bg-income/10 border-l-4 border-income p-4 rounded-r-xl font-body text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
               {answer}
             </div>
           )}
