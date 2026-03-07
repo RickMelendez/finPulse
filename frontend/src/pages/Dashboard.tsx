@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Wallet, ArrowLeftRight, ArrowUpRight, ArrowDownRight, PiggyBank } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, ArrowLeftRight, ArrowUpRight, ArrowDownRight, PiggyBank, ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { IncomeExpenseChart } from '../components/charts/IncomeExpenseChart';
@@ -91,13 +91,18 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Greeting */}
+      {/* Page heading */}
       <div>
-        <h1 className="font-heading text-xl font-bold text-slate-900 dark:text-white">
-          Good day, <span className="text-brand">{firstName}</span>
+        <div className="flex items-center gap-1.5 text-xs font-body text-slate-400 mb-1.5">
+          <span>Home</span>
+          <ChevronRight size={12} />
+          <span className="text-slate-600">Overview</span>
+        </div>
+        <h1 className="font-heading text-2xl font-bold text-slate-900">
+          Financial Overview
         </h1>
-        <p className="font-body text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-          Here&apos;s your financial overview for this month
+        <p className="font-body text-sm text-slate-400 mt-0.5">
+          Welcome back, <span className="text-slate-600 font-medium capitalize">{firstName}</span> — here&apos;s your summary for this month
         </p>
       </div>
 

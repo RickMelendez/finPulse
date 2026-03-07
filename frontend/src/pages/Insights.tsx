@@ -72,10 +72,16 @@ export function Insights() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-2xl font-bold text-slate-800 flex-1">
-          AI Insights
-        </h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-1.5 text-xs font-body text-slate-400 mb-1.5">
+            <span>Home</span>
+            <ChevronRight size={11} />
+            <span className="text-slate-600">AI Insights</span>
+          </div>
+          <h1 className="font-heading text-2xl font-bold text-slate-900">AI Insights</h1>
+          <p className="font-body text-sm text-slate-400 mt-0.5">AI-powered analysis of your finances</p>
+        </div>
         <div className="flex items-center gap-2">
           <label className="font-body text-sm text-slate-500">Period:</label>
           <input
