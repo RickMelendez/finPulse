@@ -36,11 +36,11 @@ interface FieldProps {
 
 const inputCls =
   'w-full rounded-xl px-4 py-3 text-sm font-body ' +
-  'text-slate-800 dark:text-slate-100 ' +
-  'bg-white dark:bg-slate-800 ' +
-  'border border-gray-200 dark:border-slate-700 ' +
-  'focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 dark:focus:ring-brand/30 ' +
-  'placeholder:text-slate-400 dark:placeholder:text-slate-500 ' +
+  'text-slate-800 ' +
+  'bg-white ' +
+  'border border-gray-200 ' +
+  'focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 ' +
+  'placeholder:text-slate-400 ' +
   'transition-all duration-200';
 
 function Field({ label, type = 'text', placeholder, value, onChange, autoComplete, error, required, showToggle }: FieldProps) {
@@ -49,7 +49,7 @@ function Field({ label, type = 'text', placeholder, value, onChange, autoComplet
 
   return (
     <div className="space-y-1">
-      <label className="block text-sm font-body font-medium text-slate-600 dark:text-slate-400">
+      <label className="block text-sm font-body font-medium text-slate-600">
         {label}
       </label>
       <div className="relative">
@@ -66,7 +66,7 @@ function Field({ label, type = 'text', placeholder, value, onChange, autoComplet
           <button
             type="button"
             onClick={() => setShow((s) => !s)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
             tabIndex={-1}
           >
             {show ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -86,15 +86,15 @@ function Field({ label, type = 'text', placeholder, value, onChange, autoComplet
 function AlreadyLoggedIn({ email }: { email: string }) {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-700 p-10"
+        className="text-center bg-white rounded-2xl shadow-sm border border-gray-200 p-10"
       >
         <FinPulseLogo size={48} variant="icon" className="mx-auto mb-6" />
-        <h2 className="font-heading font-bold text-2xl text-slate-900 dark:text-white mb-1">Welcome back</h2>
-        <p className="font-body text-slate-500 dark:text-slate-400 text-sm mb-8 truncate max-w-xs">{email}</p>
+        <h2 className="font-heading font-bold text-2xl text-slate-900 mb-1">Welcome back</h2>
+        <p className="font-body text-slate-500 text-sm mb-8 truncate max-w-xs">{email}</p>
         <button
           onClick={() => navigate('/', { replace: true })}
           className="flex items-center justify-center gap-2 mx-auto px-8 py-3 rounded-xl bg-brand text-white font-body font-medium text-sm hover:bg-brand-dark transition-colors"
@@ -200,9 +200,9 @@ export function Login() {
   const passwordsMatch = regConfirm.length > 0 && regPassword === regConfirm;
 
   const page = (
-    <div className="min-h-screen flex overflow-hidden bg-gray-50 dark:bg-slate-950">
+    <div className="min-h-screen flex overflow-hidden bg-gray-50">
       {/* ── Left panel — brand panel, hidden on mobile ── */}
-      <div className="hidden lg:flex w-[480px] shrink-0 flex-col bg-brand dark:bg-brand-dark relative overflow-hidden">
+      <div className="hidden lg:flex w-[480px] shrink-0 flex-col bg-brand relative overflow-hidden">
         {/* Subtle grid pattern overlay */}
         <div
           className="absolute inset-0 opacity-10"
@@ -267,10 +267,10 @@ export function Login() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="font-heading font-bold text-2xl text-slate-900 dark:text-white">
+            <h1 className="font-heading font-bold text-2xl text-slate-900">
               {mode === 'login' ? 'Sign in to your account' : 'Create your account'}
             </h1>
-            <p className="font-body text-slate-500 dark:text-slate-400 text-sm mt-1">
+            <p className="font-body text-slate-500 text-sm mt-1">
               {mode === 'login'
                 ? 'Welcome back — enter your credentials to continue'
                 : 'Start tracking your finances in minutes'}
@@ -278,7 +278,7 @@ export function Login() {
           </motion.div>
 
           {/* Mode toggle */}
-          <div className="flex mb-6 p-1 rounded-xl bg-gray-100 dark:bg-slate-800">
+          <div className="flex mb-6 p-1 rounded-xl bg-gray-100">
             {(['login', 'register'] as const).map((m) => (
               <button
                 key={m}
@@ -286,8 +286,8 @@ export function Login() {
                 className={[
                   'flex-1 py-2 rounded-lg text-sm font-body font-medium transition-all duration-200',
                   mode === m
-                    ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300',
+                    ? 'bg-white text-slate-800 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700',
                 ].join(' ')}
               >
                 {m === 'login' ? 'Sign In' : 'Create Account'}
@@ -305,7 +305,7 @@ export function Login() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 overflow-hidden"
               >
-                <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 text-sm font-body">
+                <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-body">
                   <AlertCircle size={15} className="shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
@@ -414,9 +414,9 @@ export function Login() {
           {GOOGLE_CLIENT_ID && (
             <div className="mt-5">
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
+                <div className="flex-1 h-px bg-gray-200" />
                 <span className="text-xs font-body text-slate-400">or continue with</span>
-                <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
+                <div className="flex-1 h-px bg-gray-200" />
               </div>
               <div className="flex justify-center">
                 <GoogleLogin
@@ -431,7 +431,7 @@ export function Login() {
             </div>
           )}
 
-          <p className="text-center text-xs font-body text-slate-400 dark:text-slate-600 mt-8">
+          <p className="text-center text-xs font-body text-slate-400 mt-8">
             All data is encrypted and private.
           </p>
         </div>

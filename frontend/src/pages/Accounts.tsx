@@ -8,8 +8,8 @@ import { AnimatedNumber } from '../components/ui/AnimatedNumber';
 import { useAccounts, useCreateAccount, useDeleteAccount } from '../hooks/useApi';
 
 const inputCls =
-  'w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm font-body ' +
-  'text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800/50 ' +
+  'w-full border border-border rounded-xl px-3 py-2.5 text-sm font-body ' +
+  'text-slate-800 bg-white ' +
   'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ' +
   'transition-colors duration-150';
 
@@ -86,7 +86,7 @@ export function Accounts() {
       ) : (accounts ?? []).length === 0 ? (
         <Card>
           <CardContent>
-            <div className="flex flex-col items-center py-16 text-slate-400 dark:text-slate-500">
+            <div className="flex flex-col items-center py-16 text-slate-400">
               <Wallet size={48} className="mb-3 opacity-30" />
               <p className="font-body text-sm">No accounts yet. Add one to get started.</p>
             </div>
@@ -99,12 +99,12 @@ export function Accounts() {
               <CardContent>
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="font-heading font-semibold text-slate-800 dark:text-white">{a.name}</p>
-                    <span className="text-xs font-body text-slate-400 dark:text-slate-500 capitalize">{a.type}</span>
+                    <p className="font-heading font-semibold text-slate-800">{a.name}</p>
+                    <span className="text-xs font-body text-slate-400 capitalize">{a.type}</span>
                   </div>
                   <button
                     onClick={() => handleDelete(a.id)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
                     aria-label="Delete account"
                   >
                     <Trash2 size={14} />
@@ -114,7 +114,7 @@ export function Accounts() {
                   value={a.balance}
                   className={`font-heading text-2xl font-bold ${a.balance >= 0 ? 'text-income' : 'text-expense'}`}
                 />
-                <p className="font-body text-xs text-slate-400 dark:text-slate-500 mt-1">{a.currency}</p>
+                <p className="font-body text-xs text-slate-400 mt-1">{a.currency}</p>
               </CardContent>
             </Card>
           ))}
@@ -124,13 +124,13 @@ export function Accounts() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Account">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Account Name</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Account Name</label>
             <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               required placeholder="e.g. Main Checking" className={inputCls} />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Type</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Type</label>
             <select value={form.type} onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))} className={inputCls}>
               {ACCOUNT_TYPES.map((t) => (
                 <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
@@ -139,13 +139,13 @@ export function Accounts() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Initial Balance ($)</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Initial Balance ($)</label>
             <input type="number" step="0.01" value={form.balance}
               onChange={(e) => setForm((f) => ({ ...f, balance: e.target.value }))} required className={inputCls} />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Currency</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Currency</label>
             <input value={form.currency}
               onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value.toUpperCase() }))}
               maxLength={3} className={`${inputCls} uppercase`} />

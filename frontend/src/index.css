@@ -15,10 +15,6 @@
     overscroll-behavior: none;
   }
 
-  .dark body {
-    @apply text-slate-100 bg-slate-950;
-  }
-
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
@@ -35,24 +31,6 @@
     touch-action: manipulation;
   }
 
-  /* Dark mode scrollbar */
-  .dark ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  .dark ::-webkit-scrollbar-track {
-    background: #1e293b;
-  }
-
-  .dark ::-webkit-scrollbar-thumb {
-    background: #475569;
-    border-radius: 3px;
-  }
-
-  .dark ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
-  }
 }
 
 @layer utilities {
@@ -78,17 +56,6 @@
     animation: shimmer 1.8s linear infinite;
   }
 
-  .dark .shimmer {
-    background: linear-gradient(
-      90deg,
-      #1e293b 0%,
-      #334155 50%,
-      #1e293b 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.8s linear infinite;
-  }
-
   /* Glass morphism utility */
   .glass {
     backdrop-filter: blur(16px) saturate(180%);
@@ -97,10 +64,6 @@
     border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
-  .dark .glass {
-    background-color: rgba(15, 23, 42, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
 }
 
 @keyframes shimmer {
@@ -108,12 +71,3 @@
   100% { background-position:  200% center; }
 }
 
-@keyframes twinkle {
-  0%, 100% { opacity: var(--star-opacity, 0.4); transform: scale(1); }
-  50%       { opacity: 0.05; transform: scale(0.5); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-12px); }
-}

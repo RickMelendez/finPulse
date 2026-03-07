@@ -53,23 +53,23 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
       <div
         className={clsx(
           'relative z-10 w-full max-w-lg mx-4',
-          'bg-white dark:bg-slate-800 rounded-2xl shadow-2xl',
-          'border border-border dark:border-slate-700',
+          'bg-white rounded-2xl shadow-2xl',
+          'border border-border',
           'animate-in fade-in zoom-in-95 duration-200',
           className,
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-slate-700">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2
             id="modal-title"
-            className="text-base font-semibold font-heading text-slate-800 dark:text-white"
+            className="text-base font-semibold font-heading text-slate-800"
           >
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             aria-label="Close modal"
           >
             <X size={18} />

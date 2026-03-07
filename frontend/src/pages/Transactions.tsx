@@ -3,7 +3,6 @@ import { Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Textarea } from '../components/ui/Textarea';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { SkeletonRow } from '../components/ui/Skeleton';
@@ -21,8 +20,8 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 
 const inputCls =
-  'border border-border dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-body ' +
-  'text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800/50 ' +
+  'border border-border rounded-xl px-3 py-2 text-sm font-body ' +
+  'text-slate-800 bg-white ' +
   'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ' +
   'transition-colors duration-150';
 
@@ -142,7 +141,7 @@ export function Transactions() {
         <CardContent>
           <div className="flex flex-wrap gap-3 items-end">
             <div>
-              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">Type</label>
+              <label className="block text-xs font-body text-slate-500 mb-1">Type</label>
               <select
                 value={filterType}
                 onChange={(e) => { setFilterType(e.target.value); setPage(1); }}
@@ -155,7 +154,7 @@ export function Transactions() {
             </div>
 
             <div>
-              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">Category</label>
+              <label className="block text-xs font-body text-slate-500 mb-1">Category</label>
               <select
                 value={filterCategory}
                 onChange={(e) => { setFilterCategory(e.target.value); setPage(1); }}
@@ -169,7 +168,7 @@ export function Transactions() {
             </div>
 
             <div>
-              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">From</label>
+              <label className="block text-xs font-body text-slate-500 mb-1">From</label>
               <input
                 type="date"
                 value={startDate}
@@ -179,7 +178,7 @@ export function Transactions() {
             </div>
 
             <div>
-              <label className="block text-xs font-body text-slate-500 dark:text-slate-400 mb-1">To</label>
+              <label className="block text-xs font-body text-slate-500 mb-1">To</label>
               <input
                 type="date"
                 value={endDate}
@@ -210,24 +209,24 @@ export function Transactions() {
             </div>
           )}
           {isLoading ? (
-            <div className="divide-y divide-border dark:divide-slate-700">
+            <div className="divide-y divide-border">
               {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
             </div>
           ) : (data?.data ?? []).length === 0 ? (
-            <p className="text-center py-12 text-slate-400 dark:text-slate-500 font-body text-sm">
+            <p className="text-center py-12 text-slate-400 font-body text-sm">
               No transactions found
             </p>
           ) : (
             <>
               {/* Mobile card list */}
-              <div className="sm:hidden divide-y divide-border dark:divide-slate-700">
+              <div className="sm:hidden divide-y divide-border">
                 {(data?.data ?? []).map((tx) => (
                   <div key={tx.id} className="flex items-center justify-between py-3">
                     <div className="min-w-0 flex-1 pr-3">
-                      <p className="font-body font-medium text-slate-800 dark:text-slate-100 text-sm truncate">
+                      <p className="font-body font-medium text-slate-800 text-sm truncate">
                         {tx.description}
                       </p>
-                      <p className="font-body text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                      <p className="font-body text-xs text-slate-400 mt-0.5">
                         {new Date(tx.transactionDate).toLocaleDateString()} &middot;{' '}
                         {catMap[tx.categoryId] ?? '—'}
                       </p>
@@ -242,14 +241,14 @@ export function Transactions() {
                       <div className="flex flex-col gap-1 ml-1">
                         <button
                           onClick={() => openEdit(tx)}
-                          className="p-2 rounded-lg hover:bg-brand/10 text-brand dark:text-brand-light transition-colors cursor-pointer"
+                          className="p-2 rounded-lg hover:bg-brand/10 text-brand transition-colors cursor-pointer"
                           aria-label="Edit"
                         >
                           <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(tx.id)}
-                          className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
+                          className="p-2 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
                           aria-label="Delete"
                         >
                           <Trash2 size={15} />
@@ -264,9 +263,9 @@ export function Transactions() {
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full font-body text-sm">
                   <thead>
-                    <tr className="border-b border-border dark:border-slate-700">
+                    <tr className="border-b border-border">
                       {['Date', 'Description', 'Category', 'Amount', 'Type', 'Actions'].map((h) => (
-                        <th key={h} className="text-left py-3 px-3 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        <th key={h} className="text-left py-3 px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                           {h}
                         </th>
                       ))}
@@ -274,14 +273,14 @@ export function Transactions() {
                   </thead>
                   <tbody>
                     {(data?.data ?? []).map((tx) => (
-                      <tr key={tx.id} className="border-b border-border dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-150">
-                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                      <tr key={tx.id} className="border-b border-border hover:bg-slate-50 transition-colors duration-150">
+                        <td className="py-3 px-3 text-slate-500 whitespace-nowrap">
                           {new Date(tx.transactionDate).toLocaleDateString()}
                         </td>
-                        <td className="py-3 px-3 text-slate-800 dark:text-slate-100 font-medium max-w-[200px] truncate">
+                        <td className="py-3 px-3 text-slate-800 font-medium max-w-[200px] truncate">
                           {tx.description}
                         </td>
-                        <td className="py-3 px-3 text-slate-500 dark:text-slate-400">
+                        <td className="py-3 px-3 text-slate-500">
                           {catMap[tx.categoryId] ?? '—'}
                         </td>
                         <td className={`py-3 px-3 font-heading font-semibold whitespace-nowrap ${tx.type === 'income' ? 'text-income' : 'text-expense'}`}>
@@ -294,14 +293,14 @@ export function Transactions() {
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => openEdit(tx)}
-                              className="p-1.5 rounded-lg hover:bg-brand/10 text-brand dark:text-brand-light transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg hover:bg-brand/10 text-brand transition-colors cursor-pointer"
                               aria-label="Edit"
                             >
                               <Pencil size={14} />
                             </button>
                             <button
                               onClick={() => handleDelete(tx.id)}
-                              className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
                               aria-label="Delete"
                             >
                               <Trash2 size={14} />
@@ -316,8 +315,8 @@ export function Transactions() {
 
               {/* Pagination */}
               {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border dark:border-slate-700">
-                  <p className="font-body text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                  <p className="font-body text-sm text-slate-500">
                     Page {pagination.page} of {pagination.totalPages} &middot; {pagination.total} total
                   </p>
                   <div className="flex gap-2">
@@ -363,7 +362,7 @@ export function Transactions() {
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} required />
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Category</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Category</label>
             <select value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} required className={selectFullCls}>
               <option value="">Select category</option>
               {(categories.data ?? []).filter((c) => !form.type || c.type === form.type).map((c) => (
@@ -373,7 +372,7 @@ export function Transactions() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Account</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Account</label>
             <select value={form.accountId} onChange={(e) => setForm((f) => ({ ...f, accountId: e.target.value }))} required className={selectFullCls}>
               <option value="">Select account</option>
               {(accounts.data ?? []).map((a) => (
@@ -383,19 +382,17 @@ export function Transactions() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Date</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Date</label>
             <input type="date" value={form.transactionDate}
               onChange={(e) => setForm((f) => ({ ...f, transactionDate: e.target.value }))}
               required className={selectFullCls} />
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Notes (optional)</label>
-            <Textarea
-              value={form.notes}
-              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            <label className="block text-sm font-body text-slate-700 mb-1">Notes (optional)</label>
+            <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
               rows={2}
-              placeholder="Add a note..."
+              className={`${selectFullCls} resize-none`}
             />
           </div>
 

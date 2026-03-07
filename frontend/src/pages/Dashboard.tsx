@@ -81,7 +81,7 @@ export function Dashboard() {
         </div>
         <Card>
           <CardHeader><div className="h-4 w-40 shimmer rounded" /></CardHeader>
-          <CardContent className="divide-y divide-border dark:divide-slate-700">
+          <CardContent className="divide-y divide-border">
             {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
           </CardContent>
         </Card>
@@ -109,7 +109,7 @@ export function Dashboard() {
       {/* KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Income */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 border-l-brand">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 border-l-4 border-l-brand">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center">
               <TrendingUp size={16} className="text-brand" />
@@ -123,14 +123,14 @@ export function Dashboard() {
               </span>
             </div>
           </div>
-          <AnimatedNumber value={income} className="font-heading text-xl font-bold text-slate-900 dark:text-white" />
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Total Income</p>
+          <AnimatedNumber value={income} className="font-heading text-xl font-bold text-slate-900" />
+          <p className="font-body text-xs text-slate-500 mt-1">Total Income</p>
         </div>
 
         {/* Expenses */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 border-l-expense">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 border-l-4 border-l-expense">
           <div className="flex items-center justify-between mb-2">
-            <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
               <TrendingDown size={16} className="text-expense" />
             </div>
             <div className="flex items-center gap-0.5">
@@ -142,41 +142,41 @@ export function Dashboard() {
               </span>
             </div>
           </div>
-          <AnimatedNumber value={expenses} className="font-heading text-xl font-bold text-slate-900 dark:text-white" />
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Total Expenses</p>
+          <AnimatedNumber value={expenses} className="font-heading text-xl font-bold text-slate-900" />
+          <p className="font-body text-xs text-slate-500 mt-1">Total Expenses</p>
         </div>
 
         {/* Net Balance */}
-        <div className={`bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 ${net >= 0 ? 'border-l-brand' : 'border-l-expense'}`}>
+        <div className={`bg-white rounded-2xl p-4 shadow-sm border border-gray-100 border-l-4 ${net >= 0 ? 'border-l-brand' : 'border-l-expense'}`}>
           <div className="flex items-center justify-between mb-2">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${net >= 0 ? 'bg-brand/10' : 'bg-red-50 dark:bg-red-900/20'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${net >= 0 ? 'bg-brand/10' : 'bg-red-50'}`}>
               <Wallet size={16} className={net >= 0 ? 'text-brand' : 'text-expense'} />
             </div>
             <span className="font-body text-xs font-medium text-slate-400">{savingsPct.toFixed(0)}% saved</span>
           </div>
           <AnimatedNumber value={net} className={`font-heading text-xl font-bold ${net >= 0 ? 'text-brand' : 'text-expense'}`} />
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Net Balance</p>
+          <p className="font-body text-xs text-slate-500 mt-1">Net Balance</p>
         </div>
 
         {/* Transactions */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 border-l-amber-400">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 border-l-4 border-l-amber-400">
           <div className="flex items-center justify-between mb-2">
-            <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
               <ArrowLeftRight size={16} className="text-amber-500" />
             </div>
             <span className="font-body text-xs font-medium text-slate-400">this month</span>
           </div>
-          <AnimatedNumber value={txCount} format={{ style: 'decimal' }} className="font-heading text-xl font-bold text-slate-900 dark:text-white" />
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Transactions</p>
+          <AnimatedNumber value={txCount} format={{ style: 'decimal' }} className="font-heading text-xl font-bold text-slate-900" />
+          <p className="font-body text-xs text-slate-500 mt-1">Transactions</p>
         </div>
       </div>
 
       {/* Middle row: balance overview + chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Balance overview card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col gap-5">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col gap-5">
           <div>
-            <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+            <p className="font-body text-xs text-slate-500 uppercase tracking-wider mb-1">
               Monthly Overview
             </p>
             <p className={`font-heading text-3xl font-bold ${net >= 0 ? 'text-brand' : 'text-expense'}`}>
@@ -193,11 +193,11 @@ export function Dashboard() {
               <div className="flex justify-between mb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-brand inline-block" />
-                  <span className="font-body text-sm text-slate-600 dark:text-slate-300">Income</span>
+                  <span className="font-body text-sm text-slate-600">Income</span>
                 </div>
-                <span className="font-heading text-sm font-semibold text-slate-800 dark:text-white">{fmt(income)}</span>
+                <span className="font-heading text-sm font-semibold text-slate-800">{fmt(income)}</span>
               </div>
-              <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full rounded-full bg-brand" style={{ width: '100%' }} />
               </div>
             </div>
@@ -205,11 +205,11 @@ export function Dashboard() {
               <div className="flex justify-between mb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-expense inline-block" />
-                  <span className="font-body text-sm text-slate-600 dark:text-slate-300">Expenses</span>
+                  <span className="font-body text-sm text-slate-600">Expenses</span>
                 </div>
-                <span className="font-heading text-sm font-semibold text-slate-800 dark:text-white">{fmt(expenses)}</span>
+                <span className="font-heading text-sm font-semibold text-slate-800">{fmt(expenses)}</span>
               </div>
-              <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-expense"
                   style={{ width: `${income > 0 ? Math.min((expenses / income) * 100, 100) : 0}%` }}
@@ -219,10 +219,10 @@ export function Dashboard() {
           </div>
 
           {/* Savings note */}
-          <div className={`rounded-xl p-3 ${net >= 0 ? 'bg-green-50 border border-green-100 dark:bg-green-950/20 dark:border-green-900/30' : 'bg-red-50 border border-red-100 dark:bg-red-950/20 dark:border-red-900/30'}`}>
+          <div className={`rounded-xl p-3 ${net >= 0 ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`}>
             <div className="flex items-center gap-2">
               <PiggyBank size={15} className={net >= 0 ? 'text-brand' : 'text-expense'} />
-              <span className="font-body text-xs font-medium text-slate-700 dark:text-slate-300">
+              <span className="font-body text-xs font-medium text-slate-700">
                 {net >= 0 ? `Saving ${fmt(net)} this month` : `Over budget by ${fmt(Math.abs(net))}`}
               </span>
             </div>
@@ -236,10 +236,10 @@ export function Dashboard() {
                 {topCategories.map((cat) => (
                   <div key={cat.name}>
                     <div className="flex justify-between mb-1">
-                      <span className="font-body text-xs text-slate-600 dark:text-slate-400 truncate max-w-[120px]">{cat.name}</span>
-                      <span className="font-heading text-xs font-semibold text-slate-800 dark:text-white">{fmt(cat.value)}</span>
+                      <span className="font-body text-xs text-slate-600 truncate max-w-[120px]">{cat.name}</span>
+                      <span className="font-heading text-xs font-semibold text-slate-800">{fmt(cat.value)}</span>
                     </div>
-                    <div className="h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full bg-brand/60 transition-all duration-700"
                         style={{ width: `${(cat.value / maxCatVal) * 100}%` }}
@@ -256,7 +256,7 @@ export function Dashboard() {
         <div className="lg:col-span-2 flex flex-col gap-4">
           <Card>
             <CardHeader>
-              <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+              <h2 className="font-heading text-sm font-semibold text-slate-800">
                 Cash Flow — Last 3 Months
               </h2>
             </CardHeader>
@@ -268,33 +268,33 @@ export function Dashboard() {
           {(budgets.data ?? []).length > 0 && (
             <Card>
               <CardHeader>
-                <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">Budget Status</h2>
+                <h2 className="font-heading text-sm font-semibold text-slate-800">Budget Status</h2>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full font-body text-sm">
                     <thead>
-                      <tr className="border-b border-gray-100 dark:border-slate-700">
+                      <tr className="border-b border-gray-100">
                         {['Budget', 'Limit', 'Spent', 'Remaining', 'Status'].map((h) => (
-                          <th key={h} className="text-left py-2 px-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{h}</th>
+                          <th key={h} className="text-left py-2 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {(budgets.data ?? []).slice(0, 5).map((b) => (
-                        <tr key={b.id} className="border-b border-gray-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                          <td className="py-2.5 px-4 font-medium text-slate-800 dark:text-slate-100">{b.name}</td>
-                          <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{fmtFull(b.amount)}</td>
-                          <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{fmtFull(b.spent)}</td>
+                        <tr key={b.id} className="border-b border-gray-50 hover:bg-slate-50 transition-colors">
+                          <td className="py-2.5 px-4 font-medium text-slate-800">{b.name}</td>
+                          <td className="py-2.5 px-4 text-slate-500">{fmtFull(b.amount)}</td>
+                          <td className="py-2.5 px-4 text-slate-500">{fmtFull(b.spent)}</td>
                           <td className={`py-2.5 px-4 font-semibold ${b.isOverBudget ? 'text-expense' : 'text-brand'}`}>
                             {fmtFull(b.remaining)}
                           </td>
                           <td className="py-2.5 px-4">
                             {b.isOverBudget
-                              ? <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Over Budget</span>
+                              ? <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Over Budget</span>
                               : b.isNearLimit
-                                ? <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Near Limit</span>
-                                : <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">On Track</span>
+                                ? <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Near Limit</span>
+                                : <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">On Track</span>
                             }
                           </td>
                         </tr>
@@ -311,20 +311,20 @@ export function Dashboard() {
       {/* Recent Transactions */}
       <Card>
         <CardHeader>
-          <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">Recent Transactions</h2>
+          <h2 className="font-heading text-sm font-semibold text-slate-800">Recent Transactions</h2>
         </CardHeader>
         <CardContent>
           {(recent.data?.data ?? []).length === 0 ? (
-            <p className="text-center py-8 text-slate-400 dark:text-slate-500 font-body text-sm">No transactions yet</p>
+            <p className="text-center py-8 text-slate-400 font-body text-sm">No transactions yet</p>
           ) : (
             <>
               {/* Mobile list */}
-              <div className="sm:hidden divide-y divide-gray-100 dark:divide-slate-700">
+              <div className="sm:hidden divide-y divide-gray-100">
                 {(recent.data?.data ?? []).map((tx) => (
                   <div key={tx.id} className="flex items-center justify-between py-3">
                     <div className="min-w-0 flex-1 pr-3">
-                      <p className="font-body font-medium text-slate-800 dark:text-slate-100 text-sm truncate">{tx.description}</p>
-                      <p className="font-body text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                      <p className="font-body font-medium text-slate-800 text-sm truncate">{tx.description}</p>
+                      <p className="font-body text-xs text-slate-400 mt-0.5">
                         {new Date(tx.transactionDate).toLocaleDateString()} · {catMap[tx.categoryId] ?? '—'}
                       </p>
                     </div>
@@ -342,18 +342,18 @@ export function Dashboard() {
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full font-body text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 dark:border-slate-700">
+                    <tr className="border-b border-gray-100">
                       {['Date', 'Description', 'Category', 'Amount', 'Type'].map((h) => (
-                        <th key={h} className="text-left py-2 px-3 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{h}</th>
+                        <th key={h} className="text-left py-2 px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {(recent.data?.data ?? []).map((tx) => (
-                      <tr key={tx.id} className="border-b border-gray-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td className="py-2.5 px-3 text-slate-500 dark:text-slate-400">{new Date(tx.transactionDate).toLocaleDateString()}</td>
-                        <td className="py-2.5 px-3 text-slate-800 dark:text-slate-100 font-medium">{tx.description}</td>
-                        <td className="py-2.5 px-3 text-slate-500 dark:text-slate-400">{catMap[tx.categoryId] ?? '—'}</td>
+                      <tr key={tx.id} className="border-b border-gray-50 hover:bg-slate-50 transition-colors">
+                        <td className="py-2.5 px-3 text-slate-500">{new Date(tx.transactionDate).toLocaleDateString()}</td>
+                        <td className="py-2.5 px-3 text-slate-800 font-medium">{tx.description}</td>
+                        <td className="py-2.5 px-3 text-slate-500">{catMap[tx.categoryId] ?? '—'}</td>
                         <td className={`py-2.5 px-3 font-heading font-semibold ${tx.type === 'income' ? 'text-brand' : 'text-expense'}`}>
                           {tx.type === 'income' ? '+' : '-'}{fmtFull(tx.amount)}
                         </td>
