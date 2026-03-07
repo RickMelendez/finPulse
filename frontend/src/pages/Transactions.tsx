@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { Textarea } from '../components/ui/Textarea';
 import { Badge } from '../components/ui/Badge';
 import { Modal } from '../components/ui/Modal';
 import { SkeletonRow } from '../components/ui/Skeleton';
@@ -390,9 +391,11 @@ export function Transactions() {
 
           <div>
             <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Notes (optional)</label>
-            <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+            <Textarea
+              value={form.notes}
+              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
               rows={2}
-              className={`${selectFullCls} resize-none`}
+              placeholder="Add a note..."
             />
           </div>
 

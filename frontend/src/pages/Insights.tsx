@@ -3,7 +3,6 @@ import {
   BarChart2,
   MessageCircle,
   AlertCircle,
-  Loader2,
   Activity,
   ChevronRight,
   Calculator,
@@ -15,6 +14,8 @@ import {
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { Textarea } from '../components/ui/Textarea';
+import { OrbitalLoader } from '../components/ui/OrbitalLoader';
 import { SuccessIcon, DownloadDoneIcon, SendAnimatedIcon } from '../components/ui/AnimatedStateIcons';
 import { useInsights, useInsightTrends, useAskQuestion, useGenerateBudgetPlan } from '../hooks/useApi';
 import type { BudgetPlan } from '../types';
@@ -223,9 +224,8 @@ export function Insights() {
         </CardHeader>
         <CardContent>
           {trends.isLoading && (
-            <div className="flex flex-col items-center justify-center py-8 gap-3">
-              <Loader2 size={20} className="animate-spin text-brand" />
-              <p className="font-body text-sm text-slate-400">Analyzing trends...</p>
+            <div className="flex justify-center py-8">
+              <OrbitalLoader size="sm" message="Analyzing trends..." messagePlacement="right" />
             </div>
           )}
           {trends.data && (
@@ -372,16 +372,19 @@ export function Insights() {
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAsk} className="flex gap-3 mb-4">
-            <input
+          <form onSubmit={handleAsk} className="space-y-3 mb-4">
+            <Textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="e.g. How much did I spend on food this month?"
-              className={`flex-1 ${inputCls}`}
+              rows={3}
+              hint={question.length > 0 && question.trim().length < 5 ? undefined : undefined}
             />
-            <Button type="submit" variant="primary" size="sm" loading={askQ.isPending} disabled={!question.trim()}>
-              <Send size={14} className="mr-1" /> Ask
-            </Button>
+            <div className="flex justify-end">
+              <Button type="submit" variant="primary" size="sm" loading={askQ.isPending} disabled={!question.trim()}>
+                <Send size={14} className="mr-1" /> Ask
+              </Button>
+            </div>
           </form>
 
           {askQ.isPending && (
