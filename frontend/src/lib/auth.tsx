@@ -15,7 +15,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (currentPassword: string, email?: string, newPassword?: string) => Promise<void>;
+  updateProfile: (currentPassword: string, email?: string, newPassword?: string, name?: string, phone?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -51,10 +51,10 @@ function userFromToken(token: string): AuthUser | null {
 interface AuthApiResponse {
   success: boolean;
   data: {
-    accessToken: string;
-    refreshToken: string;
-    expiresIn: number;
-    user: { id: string; email: string };
+    accessToken?: string;
+    refreshToken?: string;
+    expiresIn?: number;
+    user: { id: string; email: string; name?: string | null; phone?: string | null };
   };
 }
 
@@ -62,25 +62,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount: restore session from localStorage
+  // On mount: restore session from localStorage, then hydrate name/phone from DB
   useEffect(() => {
     const token = getAccessToken();
     if (token) {
       const restored = userFromToken(token);
       setUser(restored);
+      // Hydrate name/phone from DB (not stored in JWT)
+      api.get<{ success: boolean; data: { user: AuthUser } }>('/auth/me')
+        .then(({ data }) => setUser(data.data.user))
+        .catch(() => { /* session expired — leave as-is */ });
     }
     setLoading(false);
   }, []);
 
   const login = useCallback(async (email: string, password: string): Promise<void> => {
     const { data } = await api.post<AuthApiResponse>('/auth/login', { email, password });
-    setTokens(data.data.accessToken, data.data.refreshToken);
+    setTokens(data.data.accessToken!, data.data.refreshToken!);
     setUser({ id: data.data.user.id, email: data.data.user.email });
   }, []);
 
   const register = useCallback(async (email: string, password: string): Promise<void> => {
     const { data } = await api.post<AuthApiResponse>('/auth/register', { email, password });
-    setTokens(data.data.accessToken, data.data.refreshToken);
+    setTokens(data.data.accessToken!, data.data.refreshToken!);
     setUser({ id: data.data.user.id, email: data.data.user.email });
   }, []);
 
@@ -99,14 +103,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     currentPassword: string,
     email?: string,
     newPassword?: string,
+    name?: string,
+    phone?: string,
   ): Promise<void> => {
     const { data } = await api.patch<AuthApiResponse>('/auth/profile', {
       currentPassword,
-      ...(email ? { email } : {}),
+      ...(email !== undefined ? { email } : {}),
       ...(newPassword ? { newPassword } : {}),
+      ...(name !== undefined ? { name } : {}),
+      ...(phone !== undefined ? { phone } : {}),
     });
-    setTokens(data.data.accessToken, data.data.refreshToken);
-    setUser({ id: data.data.user.id, email: data.data.user.email });
+    if (data.data.accessToken) {
+      setTokens(data.data.accessToken, data.data.refreshToken!);
+    }
+    setUser({ id: data.data.user.id, email: data.data.user.email, name: data.data.user.name, phone: data.data.user.phone });
   }, []);
 
   return (
