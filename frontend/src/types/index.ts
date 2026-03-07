@@ -120,6 +120,8 @@ export interface BudgetPlan {
 export interface AuthUser {
   id: string;
   email: string;
+  name?: string | null;
+  phone?: string | null;
 }
 
 export interface AuthSession {

@@ -9,7 +9,7 @@ export function Card({ children, className, ...rest }: CardProps) {
   return (
     <div
       className={clsx(
-        'p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-border dark:border-slate-700',
+        'p-4 bg-white rounded-2xl shadow-sm border border-border',
         'hover:shadow-md transition-shadow duration-200',
         className,
       )}
@@ -28,7 +28,7 @@ export function CardHeader({ children, className, ...rest }: CardHeaderProps) {
   return (
     <div
       className={clsx(
-        'flex items-center justify-between mb-3 pb-3 border-b border-border dark:border-slate-700',
+        'flex items-center justify-between mb-3 pb-3 border-b border-border',
         className,
       )}
       {...rest}

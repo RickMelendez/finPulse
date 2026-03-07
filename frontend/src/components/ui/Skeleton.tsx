@@ -52,7 +52,7 @@ export function SkeletonCard({ h = 96, className }: { h?: number; className?: st
   return (
     <div
       className={clsx(
-        'rounded-2xl border border-border dark:border-slate-700 bg-surface-2 dark:bg-slate-800 p-5 space-y-3',
+        'rounded-2xl border border-border bg-surface-2 p-5 space-y-3',
         className,
       )}
     >
@@ -69,7 +69,7 @@ export function SkeletonStat({ className }: SkeletonProps) {
   return (
     <div
       className={clsx(
-        'rounded-2xl border border-border dark:border-slate-700 bg-surface-2 dark:bg-slate-800 p-5',
+        'rounded-2xl border border-border bg-surface-2 p-5',
         className,
       )}
     >

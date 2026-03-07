@@ -10,8 +10,8 @@ const fmt = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 
 const inputCls =
-  'w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2.5 text-sm font-body ' +
-  'text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800/50 ' +
+  'w-full border border-border rounded-xl px-3 py-2.5 text-sm font-body ' +
+  'text-slate-800 bg-white ' +
   'focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent ' +
   'transition-colors duration-150';
 
@@ -96,7 +96,7 @@ export function Budgets() {
       ) : (budgets ?? []).length === 0 ? (
         <Card>
           <CardContent>
-            <div className="flex flex-col items-center py-16 text-slate-400 dark:text-slate-500">
+            <div className="flex flex-col items-center py-16 text-slate-400">
               <Target size={48} className="mb-3 opacity-30" />
               <p className="font-body text-sm">
                 No budgets yet. Create one to track your spending.
@@ -113,16 +113,16 @@ export function Budgets() {
                 <CardContent>
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="font-heading font-semibold text-slate-800 dark:text-white">
+                      <p className="font-heading font-semibold text-slate-800">
                         {b.name}
                       </p>
-                      <span className="text-xs font-body text-slate-400 dark:text-slate-500 capitalize">
+                      <span className="text-xs font-body text-slate-400 capitalize">
                         {b.period}
                       </span>
                     </div>
                     <button
                       onClick={() => handleDelete(b.id)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-red-400 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors cursor-pointer"
                       aria-label="Delete budget"
                     >
                       <Trash2 size={14} />
@@ -130,16 +130,16 @@ export function Budgets() {
                   </div>
 
                   <div className="flex justify-between font-body text-sm mb-2">
-                    <span className="text-slate-500 dark:text-slate-400">
+                    <span className="text-slate-500">
                       Spent:{' '}
-                      <span className="font-semibold text-slate-800 dark:text-white">
+                      <span className="font-semibold text-slate-800">
                         {fmt(b.spent)}
                       </span>
                     </span>
-                    <span className="text-slate-400 dark:text-slate-500">of {fmt(b.amount)}</span>
+                    <span className="text-slate-400">of {fmt(b.amount)}</span>
                   </div>
 
-                  <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 mb-2">
+                  <div className="w-full bg-slate-100 rounded-full h-2.5 mb-2">
                     <div
                       className={`h-2.5 rounded-full transition-all duration-300 ${getBarColor(b.percentUsed, b.isOverBudget)}`}
                       style={{ width: `${pct}%` }}
@@ -162,7 +162,7 @@ export function Budgets() {
                           ? 'Near limit'
                           : `${fmt(b.remaining)} remaining`}
                     </span>
-                    <span className="text-slate-400 dark:text-slate-500">{b.percentUsed.toFixed(0)}%</span>
+                    <span className="text-slate-400">{b.percentUsed.toFixed(0)}%</span>
                   </div>
                 </CardContent>
               </Card>
@@ -174,7 +174,7 @@ export function Budgets() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Add Budget">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-body text-slate-700 mb-1">
               Budget Name
             </label>
             <input
@@ -187,7 +187,7 @@ export function Budgets() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-body text-slate-700 mb-1">
               Amount ($)
             </label>
             <input
@@ -202,7 +202,7 @@ export function Budgets() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">Period</label>
+            <label className="block text-sm font-body text-slate-700 mb-1">Period</label>
             <select
               value={form.period}
               onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))}
@@ -215,7 +215,7 @@ export function Budgets() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-body text-slate-700 mb-1">
               Start Date
             </label>
             <input
@@ -228,7 +228,7 @@ export function Budgets() {
           </div>
 
           <div>
-            <label className="block text-sm font-body text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-body text-slate-700 mb-1">
               Category (optional)
             </label>
             <select
