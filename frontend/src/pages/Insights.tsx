@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import {
-  Sparkles,
-  Send,
+  BarChart2,
+  MessageCircle,
   AlertCircle,
   Loader2,
-  TrendingUp,
+  Activity,
   ChevronRight,
-  Wand2,
+  Calculator,
   TrendingDown,
   CheckCircle2,
-  XCircle,
+  MinusCircle,
+  Send,
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { SuccessIcon, DownloadDoneIcon, SendAnimatedIcon } from '../components/ui/AnimatedStateIcons';
 import { useInsights, useInsightTrends, useAskQuestion, useGenerateBudgetPlan } from '../hooks/useApi';
 import type { BudgetPlan } from '../types';
 
@@ -71,11 +73,11 @@ export function Insights() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white flex-1">
+        <h1 className="font-heading text-2xl font-bold text-slate-800 flex-1">
           AI Insights
         </h1>
         <div className="flex items-center gap-2">
-          <label className="font-body text-sm text-slate-500 dark:text-slate-400">Period:</label>
+          <label className="font-body text-sm text-slate-500">Period:</label>
           <input
             type="month"
             value={period}
@@ -89,21 +91,24 @@ export function Insights() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-accent" />
-            <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+            <div className="w-6 h-6 rounded-md bg-brand/10 flex items-center justify-center">
+              <BarChart2 size={14} className="text-brand" />
+            </div>
+            <h2 className="font-heading text-sm font-semibold text-slate-800">
               Monthly Summary &mdash; {period}
             </h2>
           </div>
         </CardHeader>
         <CardContent>
           {insights.isLoading && (
-            <div className="flex items-center justify-center py-12 gap-3 text-slate-400 dark:text-slate-500 font-body text-sm">
-              <Loader2 size={20} className="animate-spin" /> Generating AI insights...
+            <div className="flex flex-col items-center justify-center py-12 gap-3">
+              <SuccessIcon size={44} color="#16a34a" duration={1400} />
+              <p className="font-body text-sm text-slate-400">Generating AI insights...</p>
             </div>
           )}
           {insights.error && (
             <div className="flex items-center gap-2 text-red-500 justify-center py-8 font-body text-sm">
-              <AlertCircle size={20} /> Could not load insights for this period.
+              <AlertCircle size={16} /> Could not load insights for this period.
             </div>
           )}
           {insightData && (
@@ -202,20 +207,23 @@ export function Insights() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <TrendingUp size={16} className="text-brand-light" />
-            <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+            <div className="w-6 h-6 rounded-md bg-emerald-50 flex items-center justify-center">
+              <Activity size={14} className="text-brand" />
+            </div>
+            <h2 className="font-heading text-sm font-semibold text-slate-800">
               3-Month Trends
             </h2>
           </div>
         </CardHeader>
         <CardContent>
           {trends.isLoading && (
-            <div className="flex items-center justify-center py-8 gap-3 text-slate-400 dark:text-slate-500 font-body text-sm">
-              <Loader2 size={18} className="animate-spin" /> Analyzing trends...
+            <div className="flex flex-col items-center justify-center py-8 gap-3">
+              <Loader2 size={20} className="animate-spin text-brand" />
+              <p className="font-body text-sm text-slate-400">Analyzing trends...</p>
             </div>
           )}
           {trends.data && (
-            <p className="font-body text-slate-700 dark:text-slate-300 leading-relaxed bg-brand/5 dark:bg-brand/10 border-l-4 border-brand-light p-4 rounded-r-xl">
+            <p className="font-body text-slate-700 leading-relaxed bg-brand/5 border-l-4 border-brand p-4 rounded-r-xl">
               {trends.data.summary}
             </p>
           )}
@@ -227,8 +235,10 @@ export function Insights() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Wand2 size={16} className="text-brand dark:text-brand-light" />
-              <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+              <div className="w-6 h-6 rounded-md bg-amber-50 flex items-center justify-center">
+                <Calculator size={14} className="text-amber-600" />
+              </div>
+              <h2 className="font-heading text-sm font-semibold text-slate-800">
                 AI Budget Planner
               </h2>
             </div>
@@ -244,26 +254,27 @@ export function Insights() {
         </CardHeader>
         <CardContent>
           {!budgetPlan && !generatePlan.isPending && !generatePlan.isError && (
-            <div className="flex flex-col items-center py-10 gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-brand/10 dark:bg-brand/20 flex items-center justify-center">
-                <Wand2 size={28} className="text-brand dark:text-brand-light" />
+            <div className="flex flex-col items-center py-10 gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center">
+                <DownloadDoneIcon size={36} color="#d97706" duration={2400} />
               </div>
-              <p className="font-body text-sm text-slate-500 dark:text-slate-400 text-center max-w-sm">
-                Click <strong>Generate My Budget Plan</strong> to get a personalized monthly budget
+              <p className="font-body text-sm text-slate-500 text-center max-w-sm">
+                Click <strong className="text-slate-700">Generate My Budget Plan</strong> to get a personalized monthly budget
                 based on your real income and spending data — powered by Claude AI.
               </p>
             </div>
           )}
 
           {generatePlan.isPending && (
-            <div className="flex items-center justify-center py-12 gap-3 text-slate-400 dark:text-slate-500 font-body text-sm">
-              <Loader2 size={20} className="animate-spin" /> Analyzing your finances and building your plan...
+            <div className="flex flex-col items-center justify-center py-12 gap-3">
+              <SuccessIcon size={44} color="#d97706" duration={1200} />
+              <p className="font-body text-sm text-slate-400">Analyzing your finances and building your plan...</p>
             </div>
           )}
 
           {generatePlan.isError && (
             <div className="flex items-center gap-2 text-red-500 justify-center py-8 font-body text-sm">
-              <AlertCircle size={20} /> Could not generate budget plan. Please try again.
+              <AlertCircle size={16} /> Could not generate budget plan. Please try again.
             </div>
           )}
 
@@ -322,8 +333,8 @@ export function Insights() {
                             </span>
                           )}
                           {item.status === 'increase_ok' && (
-                            <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-xs font-semibold">
-                              <XCircle size={12} /> Under Budget
+                            <span className="flex items-center gap-1 text-slate-500 text-xs font-semibold">
+                              <MinusCircle size={12} /> Under Budget
                             </span>
                           )}
                         </td>
@@ -346,8 +357,10 @@ export function Insights() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Send size={16} className="text-accent" />
-            <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+            <div className="w-6 h-6 rounded-md bg-blue-50 flex items-center justify-center">
+              <MessageCircle size={14} className="text-blue-600" />
+            </div>
+            <h2 className="font-heading text-sm font-semibold text-slate-800">
               Ask Your Financial Advisor
             </h2>
           </div>
@@ -366,8 +379,9 @@ export function Insights() {
           </form>
 
           {askQ.isPending && (
-            <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500 font-body text-sm">
-              <Loader2 size={16} className="animate-spin" /> Thinking...
+            <div className="flex flex-col items-center justify-center py-6 gap-3">
+              <SendAnimatedIcon size={40} color="#16a34a" duration={1600} />
+              <p className="font-body text-sm text-slate-400">Thinking...</p>
             </div>
           )}
 
@@ -378,7 +392,7 @@ export function Insights() {
           )}
 
           {answer && !askQ.isPending && (
-            <div className="bg-income/5 dark:bg-income/10 border-l-4 border-income p-4 rounded-r-xl font-body text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <div className="bg-brand/5 border-l-4 border-brand p-4 rounded-r-xl font-body text-sm text-slate-700 leading-relaxed">
               {answer}
             </div>
           )}

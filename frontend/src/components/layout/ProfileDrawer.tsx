@@ -3,9 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   X,
   LogOut,
-  Sun,
-  Moon,
-  Monitor,
   LayoutDashboard,
   ArrowLeftRight,
   Target,
@@ -14,7 +11,6 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../../lib/auth';
-import { useTheme, type Theme } from '../../lib/theme';
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -29,15 +25,8 @@ const navItems = [
   { to: '/insights', label: 'AI Insights', icon: <Sparkles size={18} /> },
 ];
 
-const themeOptions: { value: Theme; label: string; icon: React.ReactNode }[] = [
-  { value: 'light', label: 'Light', icon: <Sun size={16} /> },
-  { value: 'dark', label: 'Dark', icon: <Moon size={16} /> },
-  { value: 'system', label: 'Auto', icon: <Monitor size={16} /> },
-];
-
 export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const { user, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
   const initial = user?.email?.charAt(0).toUpperCase() ?? 'U';
@@ -93,20 +82,19 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
         aria-label="Profile and settings"
         className={clsx(
           'fixed right-0 top-0 bottom-0 z-50 w-72 flex flex-col',
-          'bg-white dark:bg-slate-900',
-          'border-l border-border dark:border-slate-700',
-          'shadow-2xl transition-transform duration-300 ease-out',
+          'bg-white border-l border-gray-200 shadow-2xl',
+          'transition-transform duration-300 ease-out',
           open ? 'translate-x-0' : 'translate-x-full',
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border dark:border-slate-700">
-          <span className="font-heading font-semibold text-slate-800 dark:text-white text-sm">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+          <span className="font-heading font-semibold text-slate-800 text-sm">
             My Profile
           </span>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors"
             aria-label="Close"
           >
             <X size={16} />
@@ -114,47 +102,23 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
         </div>
 
         {/* Avatar + Email */}
-        <div className="flex flex-col items-center gap-3 px-5 py-6 border-b border-border dark:border-slate-700">
-          <div className="w-16 h-16 rounded-full bg-brand flex items-center justify-center shadow-lg">
+        <div className="flex flex-col items-center gap-3 px-5 py-6 border-b border-gray-200">
+          <div className="w-16 h-16 rounded-full bg-brand flex items-center justify-center shadow-md">
             <span className="text-white text-2xl font-heading font-bold select-none">
               {initial}
             </span>
           </div>
           <div className="text-center">
-            <p className="text-sm font-body font-medium text-slate-800 dark:text-white truncate max-w-[200px]">
+            <p className="text-sm font-body font-medium text-slate-800 truncate max-w-[200px]">
               {user?.email ?? 'User'}
             </p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Personal account</p>
+            <p className="text-xs text-slate-400 mt-0.5">Personal account</p>
           </div>
         </div>
 
-        {/* Theme Toggle */}
-        <div className="px-5 py-4 border-b border-border dark:border-slate-700">
-          <p className="text-xs font-body font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">
-            Appearance
-          </p>
-          <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
-            {themeOptions.map(({ value, label, icon }) => (
-              <button
-                key={value}
-                onClick={() => setTheme(value)}
-                className={clsx(
-                  'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-body font-medium transition-all duration-150',
-                  theme === value
-                    ? 'bg-white dark:bg-slate-700 text-brand shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300',
-                )}
-              >
-                {icon}
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Nav links (mobile primarily) */}
+        {/* Nav links */}
         <nav className="flex-1 px-3 py-3 overflow-y-auto">
-          <p className="px-2 text-xs font-body font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+          <p className="px-2 text-xs font-body font-semibold text-slate-400 uppercase tracking-wider mb-2">
             Navigation
           </p>
           {navItems.map((item) => (
@@ -168,8 +132,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-body font-medium mb-0.5',
                   'transition-colors duration-150',
                   isActive
-                    ? 'bg-brand/10 text-brand dark:text-brand-light'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800',
+                    ? 'bg-brand/10 text-brand'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
                 )
               }
             >
@@ -180,13 +144,13 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
         </nav>
 
         {/* Sign out */}
-        <div className="px-3 pb-6 border-t border-border dark:border-slate-700 pt-3">
+        <div className="px-3 pb-6 border-t border-gray-200 pt-3">
           <button
             onClick={handleLogout}
             className={clsx(
               'flex items-center gap-3 w-full px-3 py-2.5 rounded-xl',
               'text-sm font-body font-medium text-red-500',
-              'hover:bg-red-50 dark:hover:bg-red-950/30',
+              'hover:bg-red-50',
               'transition-colors duration-150',
             )}
           >
