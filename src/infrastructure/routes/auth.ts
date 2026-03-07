@@ -137,25 +137,30 @@ router.post('/google', async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
-// PATCH /api/v1/auth/profile — update email and/or password (requires current password)
+// PATCH /api/v1/auth/profile — update email, password, name, phone
 router.patch('/profile', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { user } = req as AuthenticatedRequest;
-    const { currentPassword, email, newPassword } = req.body as {
+    const { currentPassword, email, newPassword, name, phone } = req.body as {
       currentPassword?: string;
       email?: string;
       newPassword?: string;
+      name?: string;
+      phone?: string;
     };
 
-    if (!currentPassword || typeof currentPassword !== 'string') {
-      throw new ValidationError('Validation failed', { currentPassword: ['Current password is required'] });
-    }
-
-    const dbUser = await db('users').where({ id: user.id }).first();
+    const dbUser = await db('users').where({ id: user.id }).first(['id', 'email', 'name', 'phone', 'password_hash']);
     if (!dbUser) throw new AppError('User not found', 404);
 
-    const valid = await bcrypt.compare(currentPassword, dbUser.password_hash);
-    if (!valid) throw new AppError('Current password is incorrect', 401);
+    const wantsEmailOrPassword = (email && typeof email === 'string') || (newPassword && typeof newPassword === 'string');
+    if (wantsEmailOrPassword && (!currentPassword || typeof currentPassword !== 'string')) {
+      throw new ValidationError('Validation failed', { currentPassword: ['Current password is required to change email or password'] });
+    }
+
+    if (wantsEmailOrPassword) {
+      const valid = await bcrypt.compare(currentPassword!, dbUser.password_hash);
+      if (!valid) throw new AppError('Current password is incorrect', 401);
+    }
 
     const updates: Record<string, unknown> = {};
 
@@ -175,28 +180,44 @@ router.patch('/profile', authMiddleware, async (req: Request, res: Response, nex
       updates.password_hash = await bcrypt.hash(newPassword, 12);
     }
 
+    if (typeof name === 'string') updates.name = name.trim() || null;
+    if (typeof phone === 'string') updates.phone = phone.trim() || null;
+
     if (Object.keys(updates).length === 0) {
-      return res.json({ success: true, data: { user: { id: user.id, email: dbUser.email } } });
+      res.json({ success: true, data: { user: { id: dbUser.id, email: dbUser.email, name: dbUser.name ?? null, phone: dbUser.phone ?? null } } });
+      return;
     }
 
-    const [updated] = await db('users').where({ id: user.id }).update(updates).returning(['id', 'email']);
+    const [updated] = await db('users').where({ id: user.id }).update(updates).returning(['id', 'email', 'name', 'phone']);
 
-    // Issue new tokens so the JWT reflects any email change
+    // Re-issue tokens so JWT reflects any email change
     const secret = process.env.JWT_SECRET;
     if (!secret) throw new AppError('JWT_SECRET not configured', 500);
-    const payload = { sub: updated.id, email: updated.email };
-    const accessToken = jwt.sign(payload, secret, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ ...payload, type: 'refresh' }, secret, { expiresIn: '7d' });
+    const jwtPayload = { sub: updated.id, email: updated.email };
+    const accessToken = jwt.sign(jwtPayload, secret, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ ...jwtPayload, type: 'refresh' }, secret, { expiresIn: '7d' });
 
-    return res.json({
+    res.json({
       success: true,
       data: {
         accessToken,
         refreshToken,
         expiresIn: 15 * 60,
-        user: { id: updated.id, email: updated.email },
+        user: { id: updated.id, email: updated.email, name: updated.name ?? null, phone: updated.phone ?? null },
       },
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/auth/me — returns full user profile (name, phone, email)
+router.get('/me', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { user } = req as AuthenticatedRequest;
+    const dbUser = await db('users').where({ id: user.id }).first(['id', 'email', 'name', 'phone']);
+    if (!dbUser) throw new AppError('User not found', 404);
+    res.json({ success: true, data: { user: { id: dbUser.id, email: dbUser.email, name: dbUser.name ?? null, phone: dbUser.phone ?? null } } });
   } catch (err) {
     next(err);
   }
