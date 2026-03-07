@@ -6,29 +6,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Indigo Night brand palette
+        // Forest Green brand palette
         brand: {
-          DEFAULT: '#4F46E5',
-          light: '#818CF8',
-          lighter: '#A5B4FC',
-          dark: '#3730A3',
+          DEFAULT: '#16a34a',
+          light: '#22c55e',
+          lighter: '#4ade80',
+          dark: '#15803d',
         },
-        // Legacy primary alias (keep for backwards compat)
+        // Legacy primary alias
         primary: {
-          DEFAULT: '#4F46E5',
-          light: '#818CF8',
-          dark: '#3730A3',
+          DEFAULT: '#16a34a',
+          light: '#22c55e',
+          dark: '#15803d',
         },
-        accent: '#F59E0B',
-        // Light mode surfaces
-        surface: '#F8FAFC',
-        'surface-2': '#FFFFFF',
-        border: '#E2E8F0',
-        'primary-dark': '#0F172A',
+        accent: '#f59e0b',
+        // Surfaces
+        surface: '#f8fafc',
+        'surface-2': '#ffffff',
+        border: '#e2e8f0',
+        'primary-dark': '#0f172a',
         // Semantic colors
-        income: '#10B981',
-        expense: '#EF4444',
-        warning: '#F59E0B',
+        income: '#16a34a',
+        expense: '#ef4444',
+        warning: '#f59e0b',
       },
       fontFamily: {
         heading: ['"Fira Code"', 'monospace'],
@@ -42,14 +42,6 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-200% center' },
           '100%': { backgroundPosition: '200% center' },
-        },
-        twinkle: {
-          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
-          '50%': { opacity: '0.05', transform: 'scale(0.5)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-12px)' },
         },
         'slide-in-right': {
           '0%': { transform: 'translateX(100%)' },
@@ -69,8 +61,6 @@ export default {
         'slide-in-right': 'slide-in-right 0.25s ease-out',
         'fade-in': 'fade-in 0.2s ease-out',
         'count-up': 'count-up 0.3s ease-out',
-        twinkle: 'twinkle 3s ease-in-out infinite',
-        float: 'float 6s ease-in-out infinite',
       },
     },
   },

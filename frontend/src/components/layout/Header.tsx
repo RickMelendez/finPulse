@@ -37,7 +37,7 @@ export function Header() {
           </span>
           <button
             onClick={() => setDrawerOpen(true)}
-            className="w-8 h-8 rounded-full bg-brand flex items-center justify-center shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 hover:ring-2 hover:ring-brand/30 transition-all"
+            className="w-8 h-8 rounded-full bg-brand flex items-center justify-center shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 hover:ring-2 hover:ring-brand/25 transition-all"
             aria-label="Open profile"
             title={user?.email ?? 'Profile'}
           >

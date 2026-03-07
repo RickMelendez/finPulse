@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Wallet, ArrowLeftRight, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, ArrowLeftRight, ArrowUpRight, ArrowDownRight, PiggyBank } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { IncomeExpenseChart } from '../components/charts/IncomeExpenseChart';
@@ -25,49 +25,6 @@ const fmt = (n: number) =>
 
 const fmtFull = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-
-function FinancialGauge({ pct, value }: { pct: number; value: number }) {
-  const segments = 20;
-  const cx = 100, cy = 104;
-  const r1 = 60, r2 = 82;
-  const activeCount = Math.round((Math.max(0, Math.min(100, pct)) / 100) * segments);
-
-  function segColor(i: number) {
-    if (i >= activeCount) return '#1e293b';
-    return i / (segments - 1) < 0.5 ? '#F59E0B' : '#10B981';
-  }
-
-  const statusLabel = pct >= 20 ? 'Still Safe' : pct >= 5 ? 'Watch Out' : 'In The Red';
-  const statusCls = pct >= 20
-    ? 'text-emerald-400 bg-emerald-500/20'
-    : pct >= 5
-      ? 'text-amber-400 bg-amber-500/20'
-      : 'text-red-400 bg-red-500/20';
-
-  return (
-    <div className="relative flex flex-col items-center">
-      <svg width="200" height="110" viewBox="0 0 200 110" className="w-full max-w-[200px]">
-        {Array.from({ length: segments }, (_, i) => {
-          const angle = (180 - (i / (segments - 1)) * 180) * (Math.PI / 180);
-          const x1 = cx + r1 * Math.cos(angle);
-          const y1 = cy - r1 * Math.sin(angle);
-          const x2 = cx + r2 * Math.cos(angle);
-          const y2 = cy - r2 * Math.sin(angle);
-          return (
-            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-              stroke={segColor(i)} strokeWidth="6" strokeLinecap="round" />
-          );
-        })}
-      </svg>
-      <div className="absolute bottom-0 flex flex-col items-center pb-1">
-        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusCls} mb-1`}>
-          {statusLabel}
-        </span>
-        <span className="font-heading text-2xl font-bold text-white">{fmt(value)}</span>
-      </div>
-    </div>
-  );
-}
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -97,12 +54,12 @@ export function Dashboard() {
   const savingsPct = income > 0 ? Math.max(0, ((income - expenses) / income) * 100) : 0;
   const txCount = (summary.data?.byCategory ?? []).reduce((acc, c) => acc + c.count, 0);
 
-  const pieData = (summary.data?.byCategory ?? [])
+  const topCategories = (summary.data?.byCategory ?? [])
     .filter((c) => c.type === 'expense')
     .sort((a, b) => b.total - a.total)
     .slice(0, 5)
     .map((c) => ({ name: catMap[c.categoryId] ?? 'Other', value: c.total }));
-  const maxCatVal = pieData[0]?.value ?? 1;
+  const maxCatVal = topCategories[0]?.value ?? 1;
 
   const prevIncome = sum1.data?.totalIncome ?? 0;
   const incomeChange = prevIncome > 0 ? ((income - prevIncome) / prevIncome) * 100 : 0;
@@ -114,12 +71,13 @@ export function Dashboard() {
   if (isLoading) {
     return (
       <div className="space-y-6">
+        <div className="h-7 w-56 shimmer rounded-lg" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => <SkeletonStat key={i} />)}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <SkeletonCard h={380} />
-          <SkeletonCard className="lg:col-span-2" h={380} />
+          <SkeletonCard h={320} />
+          <SkeletonCard className="lg:col-span-2" h={320} />
         </div>
         <Card>
           <CardHeader><div className="h-4 w-40 shimmer rounded" /></CardHeader>
@@ -133,100 +91,152 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Greeting */}
+      <div>
+        <h1 className="font-heading text-xl font-bold text-slate-900 dark:text-white">
+          Good day, <span className="text-brand">{firstName}</span>
+        </h1>
+        <p className="font-body text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          Here&apos;s your financial overview for this month
+        </p>
+      </div>
+
       {/* KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-border dark:border-slate-700">
-          <div className="flex items-center justify-between mb-1">
-            <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Income</p>
-            <TrendingUp size={16} className="text-income" />
+        {/* Income */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 border-l-brand">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center">
+              <TrendingUp size={16} className="text-brand" />
+            </div>
+            <div className="flex items-center gap-0.5">
+              {incomeChange >= 0
+                ? <ArrowUpRight size={12} className="text-brand" />
+                : <ArrowDownRight size={12} className="text-expense" />}
+              <span className={`font-body text-xs font-medium ${incomeChange >= 0 ? 'text-brand' : 'text-expense'}`}>
+                {Math.abs(incomeChange).toFixed(1)}%
+              </span>
+            </div>
           </div>
-          <AnimatedNumber value={income} className="font-heading text-xl font-bold text-income" />
-          <div className="flex items-center gap-1 mt-1">
-            {incomeChange >= 0
-              ? <ArrowUpRight size={12} className="text-income" />
-              : <ArrowDownRight size={12} className="text-expense" />}
-            <span className={`font-body text-xs ${incomeChange >= 0 ? 'text-income' : 'text-expense'}`}>
-              {Math.abs(incomeChange).toFixed(1)}% vs last month
-            </span>
-          </div>
+          <AnimatedNumber value={income} className="font-heading text-xl font-bold text-slate-900 dark:text-white" />
+          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Total Income</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-border dark:border-slate-700">
-          <div className="flex items-center justify-between mb-1">
-            <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Expenses</p>
-            <TrendingDown size={16} className="text-expense" />
+        {/* Expenses */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 border-l-expense">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+              <TrendingDown size={16} className="text-expense" />
+            </div>
+            <div className="flex items-center gap-0.5">
+              {expensesChange <= 0
+                ? <ArrowDownRight size={12} className="text-brand" />
+                : <ArrowUpRight size={12} className="text-expense" />}
+              <span className={`font-body text-xs font-medium ${expensesChange <= 0 ? 'text-brand' : 'text-expense'}`}>
+                {Math.abs(expensesChange).toFixed(1)}%
+              </span>
+            </div>
           </div>
-          <AnimatedNumber value={expenses} className="font-heading text-xl font-bold text-expense" />
-          <div className="flex items-center gap-1 mt-1">
-            {expensesChange <= 0
-              ? <ArrowDownRight size={12} className="text-income" />
-              : <ArrowUpRight size={12} className="text-expense" />}
-            <span className={`font-body text-xs ${expensesChange <= 0 ? 'text-income' : 'text-expense'}`}>
-              {Math.abs(expensesChange).toFixed(1)}% vs last month
-            </span>
-          </div>
+          <AnimatedNumber value={expenses} className="font-heading text-xl font-bold text-slate-900 dark:text-white" />
+          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Total Expenses</p>
         </div>
 
-        <div className={`bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border-2 ${net >= 0 ? 'border-income/30' : 'border-expense/30'} dark:border-slate-700`}>
-          <div className="flex items-center justify-between mb-1">
-            <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Net Balance</p>
-            <Wallet size={16} className="text-brand dark:text-brand-light" />
+        {/* Net Balance */}
+        <div className={`bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 ${net >= 0 ? 'border-l-brand' : 'border-l-expense'}`}>
+          <div className="flex items-center justify-between mb-2">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${net >= 0 ? 'bg-brand/10' : 'bg-red-50 dark:bg-red-900/20'}`}>
+              <Wallet size={16} className={net >= 0 ? 'text-brand' : 'text-expense'} />
+            </div>
+            <span className="font-body text-xs font-medium text-slate-400">{savingsPct.toFixed(0)}% saved</span>
           </div>
-          <AnimatedNumber value={net} className={`font-heading text-xl font-bold ${net >= 0 ? 'text-income' : 'text-expense'}`} />
-          <p className="font-body text-xs text-slate-400 dark:text-slate-500 mt-1">{savingsPct.toFixed(0)}% savings rate</p>
+          <AnimatedNumber value={net} className={`font-heading text-xl font-bold ${net >= 0 ? 'text-brand' : 'text-expense'}`} />
+          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Net Balance</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-border dark:border-slate-700">
-          <div className="flex items-center justify-between mb-1">
-            <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Transactions</p>
-            <ArrowLeftRight size={16} className="text-accent" />
+        {/* Transactions */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-slate-700 border-l-4 border-l-amber-400">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
+              <ArrowLeftRight size={16} className="text-amber-500" />
+            </div>
+            <span className="font-body text-xs font-medium text-slate-400">this month</span>
           </div>
-          <AnimatedNumber value={txCount} format={{ style: 'decimal' }} className="font-heading text-xl font-bold text-accent" />
-          <p className="font-body text-xs text-slate-400 dark:text-slate-500 mt-1">this month</p>
+          <AnimatedNumber value={txCount} format={{ style: 'decimal' }} className="font-heading text-xl font-bold text-slate-900 dark:text-white" />
+          <p className="font-body text-xs text-slate-500 dark:text-slate-400 mt-1">Transactions</p>
         </div>
       </div>
 
-      {/* Main 3-col section */}
+      {/* Middle row: balance overview + chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Dark hero card */}
-        <div className="bg-slate-900 rounded-2xl p-6 flex flex-col gap-5 shadow-lg">
+        {/* Balance overview card */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col gap-5">
           <div>
-            <h2 className="font-heading text-xl font-bold text-white">Hello, {firstName}</h2>
-            <p className="font-body text-sm text-slate-400 mt-0.5">Track your budget and financial goals</p>
+            <p className="font-body text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+              Monthly Overview
+            </p>
+            <p className={`font-heading text-3xl font-bold ${net >= 0 ? 'text-brand' : 'text-expense'}`}>
+              {fmt(net)}
+            </p>
+            <p className="font-body text-xs text-slate-400 mt-1">
+              {savingsPct.toFixed(1)}% savings rate this month
+            </p>
           </div>
 
-          <FinancialGauge pct={savingsPct} value={net} />
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
-                <span className="font-body text-sm text-slate-300">Income</span>
+          {/* Income / Expenses bars */}
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-brand inline-block" />
+                  <span className="font-body text-sm text-slate-600 dark:text-slate-300">Income</span>
+                </div>
+                <span className="font-heading text-sm font-semibold text-slate-800 dark:text-white">{fmt(income)}</span>
               </div>
-              <span className="font-heading text-sm font-semibold text-white">{fmt(income)}</span>
+              <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-full rounded-full bg-brand" style={{ width: '100%' }} />
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-slate-500 inline-block" />
-                <span className="font-body text-sm text-slate-300">Expenses</span>
+            <div>
+              <div className="flex justify-between mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-expense inline-block" />
+                  <span className="font-body text-sm text-slate-600 dark:text-slate-300">Expenses</span>
+                </div>
+                <span className="font-heading text-sm font-semibold text-slate-800 dark:text-white">{fmt(expenses)}</span>
               </div>
-              <span className="font-heading text-sm font-semibold text-white">{fmt(expenses)}</span>
+              <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-expense"
+                  style={{ width: `${income > 0 ? Math.min((expenses / income) * 100, 100) : 0}%` }}
+                />
+              </div>
             </div>
           </div>
 
-          {pieData.length > 0 && (
-            <div className="border-t border-slate-700 pt-4">
-              <p className="font-body text-xs text-slate-400 uppercase tracking-wider mb-3">Category Spending</p>
-              <div className="space-y-3">
-                {pieData.map((cat) => (
+          {/* Savings note */}
+          <div className={`rounded-xl p-3 ${net >= 0 ? 'bg-green-50 border border-green-100 dark:bg-green-950/20 dark:border-green-900/30' : 'bg-red-50 border border-red-100 dark:bg-red-950/20 dark:border-red-900/30'}`}>
+            <div className="flex items-center gap-2">
+              <PiggyBank size={15} className={net >= 0 ? 'text-brand' : 'text-expense'} />
+              <span className="font-body text-xs font-medium text-slate-700 dark:text-slate-300">
+                {net >= 0 ? `Saving ${fmt(net)} this month` : `Over budget by ${fmt(Math.abs(net))}`}
+              </span>
+            </div>
+          </div>
+
+          {/* Top spend categories */}
+          {topCategories.length > 0 && (
+            <div>
+              <p className="font-body text-xs text-slate-400 uppercase tracking-wider mb-3">Top Spending</p>
+              <div className="space-y-2.5">
+                {topCategories.map((cat) => (
                   <div key={cat.name}>
                     <div className="flex justify-between mb-1">
-                      <span className="font-body text-xs text-slate-300 truncate max-w-[120px]">{cat.name}</span>
-                      <span className="font-heading text-xs font-semibold text-white">{fmt(cat.value)}</span>
+                      <span className="font-body text-xs text-slate-600 dark:text-slate-400 truncate max-w-[120px]">{cat.name}</span>
+                      <span className="font-heading text-xs font-semibold text-slate-800 dark:text-white">{fmt(cat.value)}</span>
                     </div>
-                    <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-700"
+                        className="h-full rounded-full bg-brand/60 transition-all duration-700"
                         style={{ width: `${(cat.value / maxCatVal) * 100}%` }}
                       />
                     </div>
@@ -235,20 +245,14 @@ export function Dashboard() {
               </div>
             </div>
           )}
-
-          {pieData.length === 0 && (
-            <div className="border-t border-slate-700 pt-4 text-center py-6">
-              <p className="font-body text-sm text-slate-500">No expense data this month</p>
-            </div>
-          )}
         </div>
 
-        {/* Right 2/3: chart + budget table */}
+        {/* Right 2/3: chart + budget */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           <Card>
             <CardHeader>
               <h2 className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
-                Income vs Expenses — 3 Months
+                Cash Flow — Last 3 Months
               </h2>
             </CardHeader>
             <CardContent>
@@ -265,7 +269,7 @@ export function Dashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full font-body text-sm">
                     <thead>
-                      <tr className="border-b border-border dark:border-slate-700">
+                      <tr className="border-b border-gray-100 dark:border-slate-700">
                         {['Budget', 'Limit', 'Spent', 'Remaining', 'Status'].map((h) => (
                           <th key={h} className="text-left py-2 px-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{h}</th>
                         ))}
@@ -273,11 +277,11 @@ export function Dashboard() {
                     </thead>
                     <tbody>
                       {(budgets.data ?? []).slice(0, 5).map((b) => (
-                        <tr key={b.id} className="border-b border-border dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <tr key={b.id} className="border-b border-gray-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                           <td className="py-2.5 px-4 font-medium text-slate-800 dark:text-slate-100">{b.name}</td>
                           <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{fmtFull(b.amount)}</td>
                           <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{fmtFull(b.spent)}</td>
-                          <td className={`py-2.5 px-4 font-semibold ${b.isOverBudget ? 'text-expense' : 'text-income'}`}>
+                          <td className={`py-2.5 px-4 font-semibold ${b.isOverBudget ? 'text-expense' : 'text-brand'}`}>
                             {fmtFull(b.remaining)}
                           </td>
                           <td className="py-2.5 px-4">
@@ -285,7 +289,7 @@ export function Dashboard() {
                               ? <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Over Budget</span>
                               : b.isNearLimit
                                 ? <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Near Limit</span>
-                                : <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">On Track</span>
+                                : <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">On Track</span>
                             }
                           </td>
                         </tr>
@@ -309,7 +313,8 @@ export function Dashboard() {
             <p className="text-center py-8 text-slate-400 dark:text-slate-500 font-body text-sm">No transactions yet</p>
           ) : (
             <>
-              <div className="sm:hidden divide-y divide-border dark:divide-slate-700">
+              {/* Mobile list */}
+              <div className="sm:hidden divide-y divide-gray-100 dark:divide-slate-700">
                 {(recent.data?.data ?? []).map((tx) => (
                   <div key={tx.id} className="flex items-center justify-between py-3">
                     <div className="min-w-0 flex-1 pr-3">
@@ -319,7 +324,7 @@ export function Dashboard() {
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className={`font-heading font-semibold text-sm ${tx.type === 'income' ? 'text-income' : 'text-expense'}`}>
+                      <p className={`font-heading font-semibold text-sm ${tx.type === 'income' ? 'text-brand' : 'text-expense'}`}>
                         {tx.type === 'income' ? '+' : '-'}{fmtFull(tx.amount)}
                       </p>
                       <Badge variant={tx.type}>{tx.type}</Badge>
@@ -328,10 +333,11 @@ export function Dashboard() {
                 ))}
               </div>
 
+              {/* Desktop table */}
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full font-body text-sm">
                   <thead>
-                    <tr className="border-b border-border dark:border-slate-700">
+                    <tr className="border-b border-gray-100 dark:border-slate-700">
                       {['Date', 'Description', 'Category', 'Amount', 'Type'].map((h) => (
                         <th key={h} className="text-left py-2 px-3 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{h}</th>
                       ))}
@@ -339,14 +345,14 @@ export function Dashboard() {
                   </thead>
                   <tbody>
                     {(recent.data?.data ?? []).map((tx) => (
-                      <tr key={tx.id} className="border-b border-border dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td className="py-2 px-3 text-slate-500 dark:text-slate-400">{new Date(tx.transactionDate).toLocaleDateString()}</td>
-                        <td className="py-2 px-3 text-slate-800 dark:text-slate-100 font-medium">{tx.description}</td>
-                        <td className="py-2 px-3 text-slate-500 dark:text-slate-400">{catMap[tx.categoryId] ?? '—'}</td>
-                        <td className={`py-2 px-3 font-heading font-semibold ${tx.type === 'income' ? 'text-income' : 'text-expense'}`}>
+                      <tr key={tx.id} className="border-b border-gray-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="py-2.5 px-3 text-slate-500 dark:text-slate-400">{new Date(tx.transactionDate).toLocaleDateString()}</td>
+                        <td className="py-2.5 px-3 text-slate-800 dark:text-slate-100 font-medium">{tx.description}</td>
+                        <td className="py-2.5 px-3 text-slate-500 dark:text-slate-400">{catMap[tx.categoryId] ?? '—'}</td>
+                        <td className={`py-2.5 px-3 font-heading font-semibold ${tx.type === 'income' ? 'text-brand' : 'text-expense'}`}>
                           {tx.type === 'income' ? '+' : '-'}{fmtFull(tx.amount)}
                         </td>
-                        <td className="py-2 px-3"><Badge variant={tx.type}>{tx.type}</Badge></td>
+                        <td className="py-2.5 px-3"><Badge variant={tx.type}>{tx.type}</Badge></td>
                       </tr>
                     ))}
                   </tbody>
