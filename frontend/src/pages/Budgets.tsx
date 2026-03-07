@@ -69,10 +69,15 @@ export function Budgets() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white flex-1">
-          Budgets
-        </h1>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-1.5 text-xs font-body text-slate-400 mb-1.5">
+            <span>Home</span>
+            <span className="text-slate-300">›</span>
+            <span className="text-slate-600">Budgets</span>
+          </div>
+          <h1 className="font-heading text-2xl font-bold text-slate-900">Budgets</h1>
+        </div>
         <Button variant="primary" size="sm" onClick={() => setModalOpen(true)}>
           <Plus size={16} className="mr-1" /> Add Budget
         </Button>

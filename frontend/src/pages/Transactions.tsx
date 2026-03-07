@@ -122,10 +122,15 @@ export function Transactions() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white flex-1">
-          Transactions
-        </h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-1.5 text-xs font-body text-slate-400 mb-1.5">
+            <span>Home</span>
+            <span className="text-slate-300">›</span>
+            <span className="text-slate-600">Transactions</span>
+          </div>
+          <h1 className="font-heading text-2xl font-bold text-slate-900">Transactions</h1>
+        </div>
         <Button variant="primary" size="sm" onClick={openCreate}>
           <Plus size={16} className="mr-1" /> Add Transaction
         </Button>

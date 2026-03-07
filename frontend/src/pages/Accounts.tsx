@@ -52,10 +52,15 @@ export function Accounts() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex-1">
-          <h1 className="font-heading text-2xl font-bold text-slate-800 dark:text-white">Accounts</h1>
-          <p className="font-body text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <div className="flex items-center gap-1.5 text-xs font-body text-slate-400 mb-1.5">
+            <span>Home</span>
+            <span className="text-slate-300">›</span>
+            <span className="text-slate-600">Accounts</span>
+          </div>
+          <h1 className="font-heading text-2xl font-bold text-slate-900">Accounts</h1>
+          <p className="font-body text-sm text-slate-400 mt-0.5">
             Total balance:{' '}
             <AnimatedNumber
               value={totalBalance}
