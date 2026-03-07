@@ -13,6 +13,7 @@ import budgetsRouter from './infrastructure/routes/budgets';
 import accountsRouter from './infrastructure/routes/accounts';
 import recurringRouter from './infrastructure/routes/recurring';
 import insightsRouter from './infrastructure/routes/insights';
+import notificationsRouter from './infrastructure/routes/notifications';
 import { errorHandler } from './infrastructure/middleware/errorHandler';
 
 const app = express();
@@ -64,6 +65,9 @@ app.use('/api/v1/recurring', recurringRouter);
 
 // Insights routes (auth required)
 app.use('/api/v1/insights', insightsRouter);
+
+// Notification routes (auth required)
+app.use('/api/v1/notifications', notificationsRouter);
 
 // 404 handler
 app.use((_req, res) => {
